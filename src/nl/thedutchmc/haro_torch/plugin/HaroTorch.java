@@ -214,6 +214,7 @@ public class HaroTorch extends JavaPlugin implements Listener {
     		
     		System.out.println(joinedString);
     		
+    		
     		locsString.add(joinedString);
     	}
     	
