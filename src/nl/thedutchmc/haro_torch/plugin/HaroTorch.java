@@ -213,7 +213,7 @@ public class HaroTorch extends JavaPlugin implements Listener {
     		String joinedString = joiner.toString();
     		
     		System.out.println(joinedString);
-    		
+    		 
     		locsString.add(joinedString);
     	}
     	
