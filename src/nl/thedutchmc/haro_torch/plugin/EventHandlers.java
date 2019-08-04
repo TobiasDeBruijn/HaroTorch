@@ -28,9 +28,9 @@ public class EventHandlers implements Listener {
 		Entity entity = event.getEntity();
 		if(entity instanceof Monster) {
 			Location loc = entity.getLocation();
-			for(int i = 0; i < haroTorch.locs.size(); i++) {
-				double torchLocX = haroTorch.locs.get(i).getX();
-				double torchLocZ = haroTorch.locs.get(i).getZ();
+			for(int i = 0; i < HaroTorch.locs.size(); i++) {
+				double torchLocX = HaroTorch.locs.get(i).getX();
+				double torchLocZ = HaroTorch.locs.get(i).getZ();
 				
 				double mobLocX = loc.getX();
 				double mobLocZ = loc.getZ();
@@ -50,8 +50,14 @@ public class EventHandlers implements Listener {
 			ItemStack block = event.getItemInHand();
 			if(block.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.AQUA + "Haro's Torch")) {
 				Location loc = event.getBlock().getLocation();
-				haroTorch.locs.add(loc);
-				haroTorch.locsByOwner.put(event.getPlayer().getUniqueId(), loc);
+				HaroTorch.locs.add(loc);
+				System.out.println("locs size: " + HaroTorch.locs.size());
+				
+				HaroTorch.locsWithOwner.put(loc, event.getPlayer().getUniqueId());
+				
+				//TODO temp
+				System.out.println("locsByOwnerLength: " + HaroTorch.locsWithOwner.size());
+				
 				event.getPlayer().sendMessage(ChatColor.GOLD + "HaroTorch placed!");
 				haroTorch.saveToConfig();
 			}
@@ -63,15 +69,15 @@ public class EventHandlers implements Listener {
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		if(event.getBlock().getType() == Material.TORCH) {
-			for(int i = 0; i == haroTorch.locs.size(); i++) {
+			for(int i = 0; i == HaroTorch.locs.size(); i++) {
 				Location loc = event.getBlock().getLocation();
-				if(haroTorch.locs.get(i) == loc) {
+				if(HaroTorch.locs.get(i) == loc) {
 					final Recipes recipe = new Recipes(haroTorch);
-					haroTorch.locs.remove(i);
+					HaroTorch.locs.remove(i);
 					event.getPlayer().getInventory().removeItem(new ItemStack(Material.TORCH, 1));
 					event.getPlayer().getInventory().addItem(recipe.getHaroTorch(1));
 					event.getPlayer().sendMessage(ChatColor.GOLD + "HaroTorch Removed!");
-					haroTorch.locsByOwner.remove(event.getPlayer().getUniqueId(),loc);
+					HaroTorch.locsWithOwner.remove(loc);
 					haroTorch.saveToConfig();
 				}
 			}

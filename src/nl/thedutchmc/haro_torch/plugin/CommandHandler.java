@@ -49,10 +49,10 @@ public class CommandHandler implements CommandExecutor {
 										World w = p.getWorld();
 										
 										Location newLoc = new Location(w,x,y,z);
-										haroTorch.locs.add(newLoc);
-										haroTorch.locsByOwner.put(((Player) sender).getPlayer().getUniqueId(), newLoc);
+										HaroTorch.locs.add(newLoc);
+										HaroTorch.locsWithOwner.put(newLoc, ((Player) sender).getPlayer().getUniqueId());
 										
-										System.out.println(haroTorch.locsByOwner.size());
+										System.out.println(HaroTorch.locsWithOwner.size());
 										
 										haroTorch.saveToConfig();
 										return true;
@@ -78,11 +78,11 @@ public class CommandHandler implements CommandExecutor {
 						} else if(args[1].equalsIgnoreCase("list")) {
 							sender.sendMessage(ChatColor.GOLD + "All torches:");
 							
-							for(int i = 0; i == haroTorch.locs.size(); i++) {
-								double x = haroTorch.locs.get(i).getX();
-								double y = haroTorch.locs.get(i).getY();
-								double z = haroTorch.locs.get(i).getZ();
-								String w = haroTorch.locs.get(i).getWorld().toString();
+							for(int i = 0; i == HaroTorch.locs.size(); i++) {
+								double x = HaroTorch.locs.get(i).getX();
+								double y = HaroTorch.locs.get(i).getY();
+								double z = HaroTorch.locs.get(i).getZ();
+								String w = HaroTorch.locs.get(i).getWorld().toString();
 								System.out.println(x);
 								sender.sendMessage("- " + ChatColor.GOLD + "X: " + x + " Y: " + y + " Z: " + z + " World: " + w);	 
 							}

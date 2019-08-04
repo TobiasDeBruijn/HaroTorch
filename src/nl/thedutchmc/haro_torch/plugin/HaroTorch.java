@@ -9,7 +9,9 @@ import java.util.Map;
 import java.util.StringJoiner;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -22,8 +24,8 @@ public class HaroTorch extends JavaPlugin implements Listener {
     public EventHandlers eventHandlers = new EventHandlers(this, this);
     public CommandHandler commandHandler = new CommandHandler(this, this);
 	
-	List<Location> locs = new ArrayList<Location>();
-	Map<UUID, Location> locsByOwner = new HashMap<UUID, Location>();
+	static List<Location> locs = new ArrayList<Location>();
+	static Map<Location, UUID> locsWithOwner = new HashMap<Location, UUID>();
 	double mobBlockRadius = 48;
 	
 	private File customConfigFile;
@@ -43,7 +45,7 @@ public class HaroTorch extends JavaPlugin implements Listener {
 		//Set the EventRegister to the EventHandlers class
 		getServer().getPluginManager().registerEvents(eventHandlers, this);
         
-        createCustomConfig();        
+        createCustomConfig();
 	}
 	
 	@Override
@@ -69,20 +71,22 @@ public class HaroTorch extends JavaPlugin implements Listener {
         } catch (IOException | InvalidConfigurationException e) {
             e.printStackTrace();
         }
+        
+        readTorches();
     }
     
     public void saveToConfig() {    	
     	
     	//Handles the locs List
     	List<String> locsString = new ArrayList<String>();
-    	for(int i = 0; i == locs.size(); i++) {
+    	for(int i = 0; i > locs.size(); i++) {
     		Location loc = locs.get(i);
     		
     		//get the x,y,z and w from loc, as it is easier to store this way
     		int x = (int) loc.getX();
     		int y = (int) loc.getY();
     		int z = (int) loc.getZ();
-    		String w = loc.getWorld().toString();
+    		String w = loc.getWorld().getName();
     		
     		//Join all the above variables together into one string, for storage
     		StringJoiner joiner = new StringJoiner(",");
@@ -90,44 +94,37 @@ public class HaroTorch extends JavaPlugin implements Listener {
     		String joinedString = joiner.toString();
     		
     		//TODO Temp
-    		System.out.println(joinedString);
+    		System.out.println("locsJoinedString" + joinedString);
     		 
     		//Add the joined string to the array, which will get stored at the end
     		locsString.add(joinedString);
+        	System.out.print("locsString length: " + locsString.size());
     	}
-    	
-    	//TODO Temp
-    	System.out.print("locsString length: " + locsString.size());
-    	
+    	    	
     	//Handles the HashMap
-    	List<String> locsByOwnerString = new ArrayList<String>();
-    	
-    	//TODO temp
-    	System.out.println(locsByOwner.size());
-    	
-    	for(Map.Entry<UUID, Location> entry : locsByOwner.entrySet()) {
+    	List<String> locsWithOwnerString = new ArrayList<String>();    	
+    	for(Map.Entry<Location, UUID> entry : locsWithOwner.entrySet()) {
     		
     		//Get the key and the value from the HashMap
-    		UUID key = entry.getKey();
-    		Location value = entry.getValue();
+    		UUID value = entry.getValue();
+    		Location key = entry.getKey();
     	    
     		//get the uuid,x,y,z and w from locByOwner, as it is easier to store this way
-    		String uuid = key.toString();
-    		int x = (int) value.getX();
-    		int y = (int) value.getY();
-    		int z = (int) value.getZ();
-    		String w = value.getWorld().toString();
+    		String uuid = value.toString();
+    		int x = (int) key.getX();
+    		int y = (int) key.getY();
+    		int z = (int) key.getZ();
+    		String w = key.getWorld().getName();
     		
     		//Join all the variables together into one String, for storage
     		StringJoiner joiner = new StringJoiner(",");
     		joiner.add(uuid).add(String.valueOf(x)).add(String.valueOf(y)).add(String.valueOf(z)).add(w);
     		String joinedString = joiner.toString();
-    		System.out.println(joinedString);
     		
     		//Add the joined string to the array, which will get stored at the end
-    		locsByOwnerString.add(joinedString);
+    		locsWithOwnerString.add(joinedString);
     	}
-    	getCustomConfig().set("torchesByOwner", locsByOwnerString);
+    	getCustomConfig().set("torchesWithOwner", locsWithOwnerString);
     	getCustomConfig().set("torches", locsString);
     	try {
 			getCustomConfig().save(customConfigFile = new File(getDataFolder(), "torches.yml"));
@@ -136,5 +133,33 @@ public class HaroTorch extends JavaPlugin implements Listener {
 			System.err.println("[HaroTorch] Failed to save config!");
 			e.printStackTrace();
 		}
+    }
+    
+    public void readTorches() {
+    	System.out.println("[HaroTorch] Reading torches.yml...");
+    	
+    	//Populate locs
+    	
+    	//Populate locsWithOwner
+    	List<String> locsWithOwnerToSeparate = new ArrayList<String>();
+    	locsWithOwnerToSeparate.addAll(getCustomConfig().getStringList("torchesWithOwner"));
+    	
+    	System.out.println("locsWithOwnerToSeparate.size(): " + locsWithOwnerToSeparate.size());
+    	if(locsWithOwnerToSeparate.size() == 0) {
+        	for(int i = 0; i == locsWithOwnerToSeparate.size(); i++) {
+        		String toSeperate = locsWithOwnerToSeparate.get(i);
+        		String[] parts = toSeperate.split(",");
+        		
+        		UUID uuid = UUID.fromString(parts[0]);
+        		int x = Integer.valueOf(parts[1]);
+        		int y = Integer.valueOf(parts[2]);
+        		int z = Integer.valueOf(parts[3]);
+        		World w = Bukkit.getWorld(parts[4]);
+        		
+        		Location loc = new Location(w,x,y,z);
+        		locsWithOwner.put(loc, uuid);
+        	}
+    	}
+    	System.out.println("[HaroTorch] Reading torches.yml successful!");
     }
 } 
