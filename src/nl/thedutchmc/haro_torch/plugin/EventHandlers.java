@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -15,6 +16,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
@@ -58,6 +60,7 @@ public class EventHandlers implements Listener {
 				System.out.println("locs size: " + HaroTorch.locs.size());
 				
 				HaroTorch.locsWithOwner.put(loc, event.getPlayer().getUniqueId());
+				HaroTorch.locsWithParticleBool.put(loc, true);
 					
 				new ParticleHandler(loc,haroTorch, plugin).spawnParticle();
 				
@@ -101,6 +104,20 @@ public class EventHandlers implements Listener {
 					HaroTorch.locsWithOwner.remove(loc);
 					haroTorch.saveToConfig();
 	    		}
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onChunkLoad(ChunkLoadEvent event) {
+		for(Map.Entry<Location, UUID> entry : HaroTorch.locsWithOwner.entrySet()) {
+			Chunk chunk = event.getChunk();
+
+			Location loc = entry.getKey();
+			if(loc.getChunk().equals(chunk)) {
+				if(HaroTorch.locsWithParticleBool.get(loc) == false) {
+					new ParticleHandler(loc, haroTorch, plugin);
+				}
 			}
 		}
 	}

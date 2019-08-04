@@ -29,6 +29,7 @@ public class HaroTorch extends JavaPlugin implements Listener {
 	
 	static List<Location> locs = new ArrayList<Location>();
 	static Map<Location, UUID> locsWithOwner = new HashMap<Location, UUID>();
+	static Map<Location, Boolean> locsWithParticleBool = new HashMap<Location, Boolean>();
 	double mobBlockRadius = 48;
 	
 	private File customConfigFile;
@@ -156,7 +157,9 @@ public class HaroTorch extends JavaPlugin implements Listener {
 			int z = (int) loc.getZ();
 			World w = loc.getWorld();
 			Location locForParticles = new Location(w,x,y,z);
-			new ParticleHandler(locForParticles, this,plugin);
+			if(locForParticles.getChunk().isLoaded()) {
+				new ParticleHandler(locForParticles, this,plugin);
+			}
 		} 
     }
 } 
