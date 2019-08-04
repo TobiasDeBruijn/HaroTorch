@@ -17,27 +17,28 @@ public class Recipes {
 		this.plugin = plugin;
 	}
 	
-	    public ShapedRecipe getHaroTorchRecipe() {
-	        ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(plugin, "Haro_Torch"), getHaroTorch(1));
-	        recipe.shape(" m ", " a ", " a ");
-	        recipe.setIngredient('m', Material.NETHER_STAR);
-	        recipe.setIngredient('a', Material.DIAMOND_BLOCK);
-	        return recipe;
-	    }
+	//Shaped recipe for the HaroTorch, takes two diamond blocks, and one nether star in the center column
+    public ShapedRecipe getHaroTorchRecipe() {
+        ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(plugin, "Haro_Torch"), getHaroTorch(1));
+        recipe.shape(" m ", " a ", " a ");
+        recipe.setIngredient('m', Material.NETHER_STAR);
+        recipe.setIngredient('a', Material.DIAMOND_BLOCK);
+        return recipe;
+    }
 	 
-	 public ItemStack getHaroTorch(int count) {
-	        ItemStack miniDiamond = new ItemStack(Material.TORCH);
-	        ItemMeta meta = miniDiamond.getItemMeta();
-	        ArrayList<String> lore = new ArrayList<String>();
-	        meta.getLore();
-	        lore.add("This isn't a normal torch!");
-	        lore.add("well it is in some ways");
-	        lore.add("but it's not!");
-	        meta.setLore(lore);
-	        meta.setDisplayName(ChatColor.AQUA + "Haro's Torch");
-	        miniDiamond.setItemMeta(meta);
-	        miniDiamond.setAmount(count);
-	        return miniDiamond;
-	    }
-
+    //The HaroTorch ItemStack, with properties to keep it seperate from a normal torch.
+    public ItemStack getHaroTorch(int count) {
+    	ItemStack torch = new ItemStack(Material.TORCH);
+        ItemMeta meta = torch.getItemMeta();
+        ArrayList<String> lore = new ArrayList<String>();
+        meta.getLore();
+        lore.add("This isn't a normal torch!");
+        lore.add("well it is in some ways");
+        lore.add("but it's not!");
+        meta.setLore(lore);
+        meta.setDisplayName(ChatColor.AQUA + "Haro's Torch");
+        torch.setItemMeta(meta);
+        torch.setAmount(count);
+        return torch;
+    }
 }
