@@ -1,10 +1,15 @@
 package nl.thedutchmc.haro_torch.plugin;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,7 +23,6 @@ public class CommandHandler implements CommandExecutor {
 	@SuppressWarnings("unused") //SuppressWarning because it may be used in the future
 	private HaroTorch haroTorch;
 	
-	//Plugin not used at the moment, for future commands
 	public CommandHandler(HaroTorch plugin, HaroTorch haroTorch) {
 		this.plugin = plugin;
 		this.haroTorch = haroTorch;
@@ -57,9 +61,58 @@ public class CommandHandler implements CommandExecutor {
 						return true;
 					} else {
 						sender.sendMessage(ChatColor.GOLD + "Not a player, listing all Torches and their locations:");
-						//TODO console torch list
+						for(Map.Entry<Location, UUID> entry : HaroTorch.locsWithOwner.entrySet()) {
+							Location loc = entry.getKey();
+							UUID uuid = entry.getValue();
+						
+							Player player = Bukkit.getPlayer(uuid);
+							String playerName = player.getName();
+							int x = (int) loc.getX();
+							int y = (int) loc.getY();
+							int z = (int) loc.getZ();
+							World world = loc.getWorld();
+							String worldName = world.getName();
+							
+							sender.sendMessage("Location: " + x + " " + y + " " + z + " in world: " + worldName + " Owner: " + playerName);
+						}
 						return true;	
 					}
+				} else if (args[0].equalsIgnoreCase("check")) {
+					sender.sendMessage(ChatColor.GOLD + "Checking if you are near a torch...");
+					Player player = (Player) sender;
+					Location playerLoc = player.getLocation();
+					double playerX = playerLoc.getX();
+					double playerZ = playerLoc.getZ();
+					UUID uuid = player.getUniqueId();
+					
+					Map<Location, UUID> torchesInRange = new HashMap<Location, UUID>();
+					
+					for(Map.Entry<Location, UUID> entry : HaroTorch.locsWithOwner.entrySet()) {
+						Location torchLoc = entry.getKey();
+						double torchX = torchLoc.getX();
+						double torchZ = torchLoc.getZ();
+						
+						double distance = Math.sqrt(Math.pow(torchX - playerX, 2) + Math.pow(torchZ - playerZ, 2));
+						if(distance <= haroTorch.playerCommandCheckRadius) {
+							torchesInRange.put(torchLoc,uuid);
+						}
+					}
+					
+					if(torchesInRange.size() != 0) {
+						for(Map.Entry<Location, UUID> entry : torchesInRange.entrySet()) {
+							Location torchInRangeLoc = entry.getKey();
+							
+							int torchInRangeX = (int) torchInRangeLoc.getX();
+							int torchInRangeY = (int) torchInRangeLoc.getY();
+							int torchInRangeZ = (int) torchInRangeLoc.getZ();
+
+							
+							String torchInRangeOwner = Bukkit.getPlayer(uuid).getName();
+							
+							sender.sendMessage(ChatColor.GOLD + "Torch at: " + ChatColor.RED + torchInRangeX + " " + torchInRangeY + " " + torchInRangeZ + ChatColor.GOLD + " Owned by: " + ChatColor.DARK_RED + torchInRangeOwner);
+						}
+					}
+					return true;
 				} else {
 					sender.sendMessage(ChatColor.RED + "Invalid argument. Run /ht help for a list of commands!");
 					return true;

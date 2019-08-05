@@ -10,8 +10,8 @@ import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -29,8 +29,9 @@ public class HaroTorch extends JavaPlugin implements Listener {
 	
 	static List<Location> locs = new ArrayList<Location>();
 	static Map<Location, UUID> locsWithOwner = new HashMap<Location, UUID>();
-	static Map<Location, Boolean> locsWithParticleBool = new HashMap<Location, Boolean>();
+	
 	double mobBlockRadius = 48;
+	double playerCommandCheckRadius = 64;
 	
 	private File customConfigFile;
     private FileConfiguration customConfig;
@@ -51,6 +52,25 @@ public class HaroTorch extends JavaPlugin implements Listener {
 		
         
         createCustomConfig();
+        
+        Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
+            @Override
+            public void run() {
+
+                for (Map.Entry<Location, UUID> entry : locsWithOwner.entrySet()) {
+                    Location loc = entry.getKey();
+                	                	
+                    World world = loc.getWorld();
+                    double x = loc.getBlockX() + 0.5;
+                    double y = loc.getBlockY() + 0.5;
+                    double z = loc.getBlockZ() + 0.5;
+                    if (loc.getChunk().isLoaded()) {
+                        world.spawnParticle(Particle.DRAGON_BREATH, x, y, z, 1, 0D, 0D, 0D, 0.005);
+                    }
+                }
+
+            }
+        }, 60L, 0);
 	}
 	
 	@Override
@@ -105,12 +125,11 @@ public class HaroTorch extends JavaPlugin implements Listener {
     		locsWithOwnerString.add(joinedString);
     	}
     	getCustomConfig().set("torchesWithOwner", locsWithOwnerString);
-    	//getCustomConfig().set("torches", locsString);
     	try {
 			getCustomConfig().save(customConfigFile = new File(getDataFolder(), "torches.yml"));
-			System.out.println("[HaroTorch] Config saved sucessfully!");
+			//System.out.println("[HaroTorch] Config saved sucessfully!");
 		} catch (IOException e) {
-			System.err.println("[HaroTorch] Failed to save config!");
+			//System.err.println("[HaroTorch] Failed to save config!");
 			e.printStackTrace();
 		}
     }
@@ -122,12 +141,10 @@ public class HaroTorch extends JavaPlugin implements Listener {
     	List<String> locsWithOwnerToSeparate = new ArrayList<String>();
     	locsWithOwnerToSeparate = (getCustomConfig().getStringList("torchesWithOwner"));
     	
-    	System.out.println("locsWithOwnerToSeparate.size(): " + locsWithOwnerToSeparate.size());
-    	if(locsWithOwnerToSeparate.size() != 0) {
-        	for(int i = 0; i == locsWithOwnerToSeparate.size(); i++) {
-        		String toSeperate = locsWithOwnerToSeparate.get(i);
-        		String[] parts = toSeperate.split(",");
-        		
+    	if(locsWithOwnerToSeparate.size() != 0) {    		
+    		for(String toSeparate : locsWithOwnerToSeparate) {
+        		String[] parts = toSeparate.split(",");
+        	
         		UUID uuid = UUID.fromString(parts[0]);
         		int x = Integer.valueOf(parts[1]);
         		int y = Integer.valueOf(parts[2]);
@@ -135,31 +152,13 @@ public class HaroTorch extends JavaPlugin implements Listener {
         		World w = Bukkit.getWorld(parts[4]);
         		
         		Location loc = new Location(w,x,y,z);
-
-        		new ParticleHandler(loc,this,this).spawnParticle();
         		
         		locs.add(loc);
         		locsWithOwner.put(loc, uuid);
-        	}
+    		}
         	System.out.println("[HaroTorch] Reading torches.yml successful!");
-    		setParticles();
     	} else {
     		System.out.println("[HaroTorch] torches.yml doesn't contain any entries. Skipping it");
     	}
-    }
-    
-    public void setParticles() {
-    	for(Map.Entry<Location, UUID> entry : HaroTorch.locsWithOwner.entrySet()) {
-    		Location loc = entry.getKey();
-			
-			int x = (int) loc.getX();
-			int y = (int) loc.getY();
-			int z = (int) loc.getZ();
-			World w = loc.getWorld();
-			Location locForParticles = new Location(w,x,y,z);
-			if(locForParticles.getChunk().isLoaded()) {
-				new ParticleHandler(locForParticles, this,plugin);
-			}
-		} 
     }
 } 

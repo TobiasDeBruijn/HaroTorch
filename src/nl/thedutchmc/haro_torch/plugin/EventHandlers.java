@@ -4,7 +4,6 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -16,7 +15,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
-import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
@@ -57,14 +55,10 @@ public class EventHandlers implements Listener {
 			if(block.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.AQUA + "Haro's Torch")) {
 				Location loc = event.getBlock().getLocation();
 				HaroTorch.locs.add(loc);
-				System.out.println("locs size: " + HaroTorch.locs.size());
 				
 				HaroTorch.locsWithOwner.put(loc, event.getPlayer().getUniqueId());
-				HaroTorch.locsWithParticleBool.put(loc, true);
-					
-				new ParticleHandler(loc,haroTorch, plugin).spawnParticle();
 				
-				event.getPlayer().sendMessage(ChatColor.GOLD + "HaroTorch placed! It may take a couple seconds for the particles to appear!");
+				event.getPlayer().sendMessage(ChatColor.GOLD + "HaroTorch placed!");
 				haroTorch.saveToConfig();
 			}
 			
@@ -72,52 +66,36 @@ public class EventHandlers implements Listener {
 		}
 	}
 	
-	@SuppressWarnings("unused") //variables are there for a WIP item
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
 		if(event.getBlock().getType() == Material.TORCH) {			
+			Location locToRemove = null;
+			boolean removedLoc = false;
 			for(Map.Entry<Location, UUID> entry : HaroTorch.locsWithOwner.entrySet()) {
 				Location loc = event.getBlock().getLocation();
-				double x = loc.getX();
-				double y = loc.getY();
-				double z = loc.getZ();
-				String world = loc.getWorld().getName();
 
 	    		//Get the key from the HashMap
 	    		Location key = entry.getKey();
 	    	    
-	    		//get the x,y,z and w from locWithOwner. WO meaning WithOwner
-	    		int xWO = (int) key.getX();
-	    		int yWO = (int) key.getY();
-	    		int zWO = (int) key.getZ();
-	    		World wWO = key.getWorld();
+	    		//get the x,y,z and w from locWithOwner.
+	    		int x = (int) key.getX();
+	    		int y = (int) key.getY();
+	    		int z = (int) key.getZ();
+	    		World w = key.getWorld();
 	    	
-	    		Location locFromList = new Location(wWO,xWO,yWO,zWO);
+	    		Location locFromList = new Location(w,x,y,z);
 	    			    		
 	    		if(locFromList.equals(loc)) {					
 	    			final Recipes recipe = new Recipes(haroTorch);
-					HaroTorch.locsWithOwner.remove(locFromList);
-					//TODO remove particle
 					event.setDropItems(false);
 					event.getPlayer().getInventory().addItem(recipe.getHaroTorch(1));
-					event.getPlayer().sendMessage(ChatColor.GOLD + "HaroTorch Removed! Particles are not removed yet automatically. They will be gone on the next restart!");
-					HaroTorch.locsWithOwner.remove(loc);
+					event.getPlayer().sendMessage(ChatColor.GOLD + "HaroTorch Removed!");
 					haroTorch.saveToConfig();
+					locToRemove = loc;
+					removedLoc = true;
 	    		}
-			}
-		}
-	}
-	
-	@EventHandler
-	public void onChunkLoad(ChunkLoadEvent event) {
-		for(Map.Entry<Location, UUID> entry : HaroTorch.locsWithOwner.entrySet()) {
-			Chunk chunk = event.getChunk();
-
-			Location loc = entry.getKey();
-			if(loc.getChunk().equals(chunk)) {
-				if(HaroTorch.locsWithParticleBool.get(loc) == false) {
-					new ParticleHandler(loc, haroTorch, plugin);
-				}
+			} if(removedLoc) {
+				HaroTorch.locsWithOwner.remove(locToRemove);
 			}
 		}
 	}

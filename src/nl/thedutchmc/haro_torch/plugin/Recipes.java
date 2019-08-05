@@ -20,9 +20,10 @@ public class Recipes {
 	//Shaped recipe for the HaroTorch, takes two diamond blocks, and one nether star in the center column
     public ShapedRecipe getHaroTorchRecipe() {
         ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(plugin, "Haro_Torch"), getHaroTorch(1));
-        recipe.shape(" m ", " a ", " a ");
-        recipe.setIngredient('m', Material.NETHER_STAR);
-        recipe.setIngredient('a', Material.DIAMOND_BLOCK);
+        recipe.shape("ddd", "dnd", "ooo");
+        recipe.setIngredient('n', Material.NETHER_STAR);
+        recipe.setIngredient('d', Material.DIAMOND);
+        recipe.setIngredient('o', Material.OBSIDIAN);
         return recipe;
     }
 	 
