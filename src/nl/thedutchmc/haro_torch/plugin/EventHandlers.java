@@ -70,7 +70,7 @@ public class EventHandlers implements Listener {
 	
 	@EventHandler
 	public void onBlockPlace(BlockPlaceEvent event) {
-		if(event.getBlock().getType() == Material.TORCH) {
+		if(event.getBlock().getType() == Material.GLASS || event.getBlock().getType() == Material.WHITE_STAINED_GLASS) {
 			ItemStack block = event.getItemInHand();
 			if(block.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.AQUA + "Haro's Torch")) {
 				Location loc = event.getBlock().getLocation();				
@@ -87,7 +87,7 @@ public class EventHandlers implements Listener {
 	
 	@EventHandler
 	public void onBlockBreak(BlockBreakEvent event) {
-		if(event.getBlock().getType() == Material.TORCH) {			
+		if(event.getBlock().getType() == Material.GLASS || event.getBlock().getType() == Material.WHITE_STAINED_GLASS) {			
 			Location locToRemove = event.getBlock().getLocation();
 			boolean removedLoc = false;
 			

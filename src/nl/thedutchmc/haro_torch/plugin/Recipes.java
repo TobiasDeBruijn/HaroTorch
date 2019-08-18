@@ -29,7 +29,7 @@ public class Recipes {
 	 
     //The HaroTorch ItemStack, with properties to keep it seperate from a normal torch.
     public ItemStack getHaroTorch(int count) {
-    	ItemStack torch = new ItemStack(Material.TORCH);
+    	ItemStack torch = new ItemStack(Material.WHITE_STAINED_GLASS);
         ItemMeta meta = torch.getItemMeta();
         ArrayList<String> lore = new ArrayList<String>();
         meta.getLore();
