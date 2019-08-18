@@ -27,6 +27,7 @@ public class HaroTorch extends JavaPlugin implements Listener {
     public CommandHandler commandHandler = new CommandHandler(this, this);
     Plugin plugin = this;
 	
+    static List<Location> locs = new ArrayList<Location>();
 	static Map<Location, UUID> locsWithOwner = new HashMap<Location, UUID>();
 	
 	double mobBlockRadius = 48;
@@ -56,6 +57,21 @@ public class HaroTorch extends JavaPlugin implements Listener {
             @Override
             public void run() {
 
+            	for(int i = 0; i <= locs.size()-1; i++) {
+            		if(locs.size() >= i && locs.size() != 0) {
+                		Location loc = locs.get(i);
+                		
+                		World world = loc.getWorld();
+                        double x = loc.getBlockX() + 0.5;
+                        double y = loc.getBlockY() + 0.5;
+                        double z = loc.getBlockZ() + 0.5;
+                        if (loc.getChunk().isLoaded()) {
+                            world.spawnParticle(Particle.DRAGON_BREATH, x, y, z, 1, 0D, 0D, 0D, 0.005);
+                        }
+            		}
+
+            	}
+            	/*
                 for (Map.Entry<Location, UUID> entry : locsWithOwner.entrySet()) {
                     Location loc = entry.getKey();
                 	                	
@@ -66,7 +82,7 @@ public class HaroTorch extends JavaPlugin implements Listener {
                     if (loc.getChunk().isLoaded()) {
                         world.spawnParticle(Particle.DRAGON_BREATH, x, y, z, 1, 0D, 0D, 0D, 0.005);
                     }
-                }
+                }*/
 
             }
         }, 60L, 0);
@@ -152,6 +168,7 @@ public class HaroTorch extends JavaPlugin implements Listener {
         		
         		Location loc = new Location(w,x,y,z);
         		
+        		locs.add(loc);
         		locsWithOwner.put(loc, uuid);
     		}
         	System.out.println("[HaroTorch] Reading torches.yml successful!");
