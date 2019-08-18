@@ -27,7 +27,6 @@ public class HaroTorch extends JavaPlugin implements Listener {
     public CommandHandler commandHandler = new CommandHandler(this, this);
     Plugin plugin = this;
 	
-	static List<Location> locs = new ArrayList<Location>();
 	static Map<Location, UUID> locsWithOwner = new HashMap<Location, UUID>();
 	
 	double mobBlockRadius = 48;
@@ -153,7 +152,6 @@ public class HaroTorch extends JavaPlugin implements Listener {
         		
         		Location loc = new Location(w,x,y,z);
         		
-        		locs.add(loc);
         		locsWithOwner.put(loc, uuid);
     		}
         	System.out.println("[HaroTorch] Reading torches.yml successful!");

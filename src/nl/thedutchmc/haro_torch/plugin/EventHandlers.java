@@ -33,14 +33,18 @@ public class EventHandlers implements Listener {
 		Entity entity = event.getEntity();
 		if(entity instanceof Monster || event.getEntityType().equals(EntityType.PHANTOM) || event.getEntityType().equals(EntityType.SLIME)) {
 			Location loc = entity.getLocation();
-			for(int i = 0; i < HaroTorch.locs.size(); i++) {
-				double torchLocX = HaroTorch.locs.get(i).getX();
-				double torchLocZ = HaroTorch.locs.get(i).getZ();
+			
+			for(Map.Entry<Location, UUID> entry : HaroTorch.locsWithOwner.entrySet()) {
+				Location key = entry.getKey();
 				
 				double mobLocX = loc.getX();
 				double mobLocZ = loc.getZ();
 				
+				double torchLocX = key.getX();
+				double torchLocZ = key.getZ();
+				
 				double distance = Math.sqrt(Math.pow(torchLocX - mobLocX, 2) + Math.pow(torchLocZ - mobLocZ, 2));
+
 				if(distance <= 48) {
 					event.setCancelled(true);
 				}
@@ -53,9 +57,7 @@ public class EventHandlers implements Listener {
 		if(event.getBlock().getType() == Material.TORCH) {
 			ItemStack block = event.getItemInHand();
 			if(block.getItemMeta().getDisplayName().equalsIgnoreCase(ChatColor.AQUA + "Haro's Torch")) {
-				Location loc = event.getBlock().getLocation();
-				HaroTorch.locs.add(loc);
-				
+				Location loc = event.getBlock().getLocation();				
 				HaroTorch.locsWithOwner.put(loc, event.getPlayer().getUniqueId());
 				
 				event.getPlayer().sendMessage(ChatColor.GOLD + "HaroTorch placed!");
