@@ -2,6 +2,7 @@ main: nl.thedutchmc.haro_torch.plugin.HaroTorch
 name: HaroTorch
 author: TheDutchMC76
 version: 1.0
+api-version: 1.13
 description: Adds Haro's Torch, a tool which disables mob spawns. Developed for a lovely friend of mine, Haro :)
 commands:
  ht:
