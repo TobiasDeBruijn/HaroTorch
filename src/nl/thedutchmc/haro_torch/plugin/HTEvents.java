@@ -80,7 +80,6 @@ public class HTEvents implements Listener {
 
 	@EventHandler
 	public void onSave(WorldSaveEvent event) {
-		System.out.println("Saving Torch Data");
 		plugin.torchSaveData.save();
 	}
 }

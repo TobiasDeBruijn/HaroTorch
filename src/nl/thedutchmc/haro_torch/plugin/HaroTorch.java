@@ -64,7 +64,6 @@ public class HaroTorch extends JavaPlugin implements Listener {
 
 	@Override
 	public void onDisable() {
-		System.out.println("Saving Torch Data");
 		torchSaveData.save();
 	}
 

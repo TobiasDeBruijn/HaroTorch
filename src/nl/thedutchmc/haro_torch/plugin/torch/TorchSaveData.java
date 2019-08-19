@@ -57,7 +57,6 @@ public class TorchSaveData {
 		}
 		for (UUID uuid : set) {
 			List<Location> locations = TorchHandler.getOwnerLocations(uuid);
-			System.out.println("Saving torch data for: " + Bukkit.getPlayer(uuid).getName() + " - TorchCount: " + locations.size());
 			torchData.set("torches." + uuid.toString(), locations);
 		}
 		try {
