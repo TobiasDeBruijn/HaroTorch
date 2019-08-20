@@ -82,4 +82,8 @@ public class TorchHandler {
 		return false;
 	}
 
+	public static double getDistanceCylindrical(Location locationA, Location locationB) {
+		return Math.pow((locationA.getX() - locationB.getX()), 2) + Math.pow((locationA.getZ() - locationB.getZ()), 2);
+	}
+
 }
