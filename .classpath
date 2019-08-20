@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="lib" path="R:/Modding/External Libs/paper-173.jar"/>
 	<classpathentry kind="lib" path="R:/Modding/Spigot Server/spigot-1.14.4.jar" sourcepath="R:/Modding/BuildTools/Spigot/Spigot-API"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
