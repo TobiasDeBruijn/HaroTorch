@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -84,6 +85,17 @@ public class TorchHandler {
 
 	public static double getDistanceCylindrical(Location locationA, Location locationB) {
 		return Math.pow((locationA.getX() - locationB.getX()), 2) + Math.pow((locationA.getZ() - locationB.getZ()), 2);
+	}
+
+	public static List<Torchy> getTorchesNearPlayer(Player player) {
+		List<Torchy> toReturn = new ArrayList<Torchy>();
+
+		for (Torchy torch : torches) {
+			if (torch.getLocation().distanceSquared(player.getLocation()) < (32 * 32)) {
+				toReturn.add(torch);
+			}
+		}
+		return toReturn;
 	}
 
 }
