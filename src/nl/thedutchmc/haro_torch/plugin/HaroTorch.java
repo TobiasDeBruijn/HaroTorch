@@ -43,19 +43,18 @@ public class HaroTorch extends JavaPlugin implements Listener {
 			public void run() {
 				for (Torchy torch : TorchHandler.getTorches()) {
 					World world = torch.getLocation().getWorld();
-					if (torch.getLocation().getChunk().isLoaded()) {
-						Location loc = torch.getLocation();
-						Collection<Entity> entities = world.getNearbyEntities(torch.getLocation(), 48, 48, 48);
+					Location location = torch.getLocation();
+					if (world.isChunkLoaded(location.getBlockX() / 16, location.getBlockZ() / 16)) {
+						Collection<Entity> entities = world.getNearbyEntities(location, 48, 48, 48);
 						for (Entity e : entities) {
 							if (e instanceof Player) {
-								double x = loc.getBlockX() + 0.5;
-								double y = loc.getBlockY() + 0.5;
-								double z = loc.getBlockZ() + 0.5;
+								double x = location.getBlockX() + 0.5;
+								double y = location.getBlockY() + 0.5;
+								double z = location.getBlockZ() + 0.5;
 								world.spawnParticle(Particle.DRAGON_BREATH, x, y, z, 1, 0D, 0D, 0D, 0.005);
 
 							}
 						}
-
 					}
 				}
 			}
