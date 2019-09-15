@@ -41,12 +41,9 @@ public class CommandHandler implements CommandExecutor {
 						for (Torchy torch : TorchHandler.getTorches()) {
 							if (torch.getOwner().equals(playerUuid)) {
 								Location location = torch.getLocation();
-								int x = location.getBlockX();
-								int y = location.getBlockY();
-								int z = location.getBlockZ();
 								Environment e = location.getWorld().getEnvironment();
 								String w = e.equals(Environment.NORMAL) ? "Overworld" : e.toString().toLowerCase();
-								sender.sendMessage("Torch: X: " + ChatColor.GOLD + x + ChatColor.WHITE + " Y: " + ChatColor.GOLD + y + ChatColor.WHITE + " Z: " + ChatColor.GOLD + z + ChatColor.WHITE + " In world: " + ChatColor.GOLD + w);
+								sender.sendMessage("Torch: X: " + ChatColor.GOLD + location.getBlockX() + ChatColor.WHITE + " Y: " + ChatColor.GOLD + location.getBlockY() + ChatColor.WHITE + " Z: " + ChatColor.GOLD + location.getBlockZ() + ChatColor.WHITE + " In world: " + ChatColor.GOLD + w);
 							}
 						}
 						return true;
@@ -55,12 +52,10 @@ public class CommandHandler implements CommandExecutor {
 						for (Torchy torch : TorchHandler.getTorches()) {
 							Player player = Bukkit.getPlayer(torch.getOwner());
 							Location location = torch.getLocation();
-							int x = location.getBlockX();
-							int y = location.getBlockY();
-							int z = location.getBlockZ();
+
 							Environment e = location.getWorld().getEnvironment();
 							String w = e.equals(Environment.NORMAL) ? "Overworld" : e.toString().toLowerCase();
-							sender.sendMessage("Location: " + x + " " + y + " " + z + " in world: " + w + " Owner: " + player.getName());
+							sender.sendMessage("Location: " + location.getBlockX() + " " + location.getBlockY() + " " + location.getBlockZ() + " in world: " + w + " Owner: " + player.getName());
 						}
 						return true;
 					}
@@ -70,14 +65,27 @@ public class CommandHandler implements CommandExecutor {
 					Location playerLoc = player.getLocation();
 					for (Torchy torch : TorchHandler.getTorches()) {
 						Player owner = Bukkit.getPlayer(torch.getOwner());
-						Location location = torch.getLocation();
-						int x = location.getBlockX();
-						int y = location.getBlockY();
-						int z = location.getBlockZ();
+						Location torchLoc = torch.getLocation();
 						if (torch.getLocation().distanceSquared(playerLoc) < plugin.playerCommandCheckRadiusSq)
-							sender.sendMessage(ChatColor.GOLD + "Torch at: " + ChatColor.RED + x + " " + y + " " + z + ChatColor.GOLD + " Owned by: " + ChatColor.DARK_RED + owner.getName());
+							sender.sendMessage(ChatColor.GOLD + "Torch at: " + ChatColor.RED + torchLoc.getBlockX() + " " + torchLoc.getBlockY() + " " + torchLoc.getBlockZ() + ChatColor.GOLD + " Owned by: " + ChatColor.DARK_RED + owner.getName());
 					}
 					return true;
+				} else if(args[0].equalsIgnoreCase("aoe")) {
+					if(sender instanceof Player) {
+						Player p = ((Player) sender).getPlayer();
+						Location playerLoc = p.getLocation();
+						
+						sender.sendMessage("AOE:");
+						for (Torchy torch : TorchHandler.getTorches()) {
+							Location torchLoc = torch.getLocation();
+							
+							double distance = TorchHandler.getDistanceCylindrical(torchLoc, playerLoc);
+							
+							if(distance <= 48 && p.getLocation().getWorld().equals(torchLoc.getWorld())) {
+								sender.sendMessage(ChatColor.GOLD + "You are in the AOE of a HaroTorch at: " + ChatColor.RED + (int) torchLoc.getX() + " " + (int) torchLoc.getY() + " " + (int) torchLoc.getZ());
+							}
+						}
+					}
 				} else {
 					sender.sendMessage(ChatColor.RED + "Invalid argument. Run /ht help for a list of commands!");
 					return true;

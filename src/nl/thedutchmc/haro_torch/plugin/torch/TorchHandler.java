@@ -91,8 +91,10 @@ public class TorchHandler {
 		List<Torchy> toReturn = new ArrayList<Torchy>();
 
 		for (Torchy torch : torches) {
-			if (torch.getLocation().distanceSquared(player.getLocation()) < (32 * 32)) {
-				toReturn.add(torch);
+			if(torch.getLocation().getWorld().equals(player.getLocation().getWorld())) {
+				if (torch.getLocation().distanceSquared(player.getLocation()) < (32 * 32)) {
+					toReturn.add(torch);		
+				}
 			}
 		}
 		return toReturn;

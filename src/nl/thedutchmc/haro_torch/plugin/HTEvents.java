@@ -38,8 +38,11 @@ public class HTEvents implements Listener {
 			if (entity instanceof Monster || event.getEntityType() == EntityType.PHANTOM || event.getEntityType() == EntityType.SLIME && !event.getEntityType().equals(EntityType.WITHER)) {
 				Location entityLoc = entity.getLocation();
 				for (Torchy torch : TorchHandler.getTorches()) {
-					if (TorchHandler.getDistanceCylindrical(torch.getLocation(), entityLoc) < plugin.mobBlockRadiusSq) {
-						event.setCancelled(true);
+					if(entityLoc.getWorld().equals(torch.getLocation().getWorld())) {
+						if (TorchHandler.getDistanceCylindrical(torch.getLocation(), entityLoc) < plugin.mobBlockRadiusSq) {
+							event.setCancelled(true);
+							break;
+						}
 					}
 				}
 			}
