@@ -34,8 +34,8 @@ public class HTEvents implements Listener {
 	@EventHandler
 	public void creatureSpawnEvent(CreatureSpawnEvent event) {
 		Entity entity = event.getEntity();
-		if (!event.getSpawnReason().equals(SpawnReason.SPAWNER)) {
-			if (entity instanceof Monster || event.getEntityType() == EntityType.PHANTOM || event.getEntityType() == EntityType.SLIME && !event.getEntityType().equals(EntityType.WITHER)) {
+		if (!event.getSpawnReason().equals(SpawnReason.SPAWNER) && !event.getSpawnReason().equals(SpawnReason.INFECTION)) {
+			if (entity instanceof Monster || event.getEntityType() == EntityType.PHANTOM || event.getEntityType() == EntityType.SLIME && !event.getEntityType().equals(EntityType.WITHER )) {
 				Location entityLoc = entity.getLocation();
 				for (Torchy torch : TorchHandler.getTorches()) {
 					if(entityLoc.getWorld().equals(torch.getLocation().getWorld())) {
