@@ -1,0 +1,50 @@
+#What block to use as the HaroTorch, this does not have to be a torch. Should include minecraft: prefix! Default: minecraft:torch
+#I recommend you do not use non-transparent blocks. Particles will then not be seen, thus a Player cannot identify where their Torch is!
+torchBlock: "minecraft:torch"
+
+#Should there be particles around the Torch when it is placed in the world. Default: true
+enableTorchParticles: true
+
+#What should the range of the Torch be. Default: 64
+torchRange: 64
+
+#What should we tell the Player when they try to break a Torch which is not theirs
+messageTorchBrokenOwnerMismatch: "You are not allowed to break this Torch since you do not own it!"
+
+#What should we tell the Player when they successfully break a torch
+messageTorchBrokenSuccess: "Torch broken successfully!"
+
+#What should we tell the Player when they successfully place a torch
+messageTorchPlacedSucccess: "Torch placed successfully!"
+
+#What radius should we use to highlight Torches. Default: 64
+torchHighlightRange: 64
+
+#For how long should the Torches be higlighted. In seconds. Default: 30
+torchHighlightTime: 30
+
+# Recipe for the Torch
+#
+# Example:
+#
+# recipeShape:
+# - "xgx"
+# - "gtx"
+# - "xgx"
+#
+# recipeKeys:
+# - "x<-->minecraft:air"
+# - "g<-->minecraft:gold_ingot"
+# - "t<-->minecraft:torch"
+#
+# It is really important that this formatting is correct!
+
+recipeShape:
+- "xgx"
+- "gtx"
+- "xgx"
+
+recipeKeys:
+- "x<-->minecraft:air"
+- "g<-->minecraft:gold_ingot"
+- "t<-->minecraft:torch"

@@ -1,0 +1,28 @@
+main: nl.thedutchmc.harotorch.HaroTorch
+name: HaroTorch-V2
+author: TheDutchMC76
+api-version: 1.16
+description: HaroTorch is a plugin which adds the HaroTorch, a block which blocks mob spawns in a configurable radius.
+version: @version@
+commands:
+ torch:
+  description: Use /torch help for help
+  usage: /torch <option>
+
+permissions:
+ harotorch.*:
+  description: All HaroTorch v2 commands
+  default: op
+  children:
+   harotorch.give: true
+   harotorch.convert: true
+   harotorch.highlight: true
+ harotorch.give:
+  description: /torch give
+  default: op
+ harotorch.convert:
+  description: /torch convert
+  default: op
+ harotorch.highlight:
+  description: /torch highlight
+  default: true
