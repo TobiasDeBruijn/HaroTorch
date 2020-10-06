@@ -10,6 +10,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.harotorch.commands.TorchCommandExecutor;
+import nl.thedutchmc.harotorch.commands.TorchCommandTabCompleter;
 import nl.thedutchmc.harotorch.events.BlockBreakEventListener;
 import nl.thedutchmc.harotorch.events.BlockExplodeEventListener;
 import nl.thedutchmc.harotorch.events.BlockFromToEventListener;
@@ -55,6 +56,7 @@ public class HaroTorch extends JavaPlugin {
 		
 		//Commands
 		this.getCommand("torch").setExecutor(new TorchCommandExecutor(this));
+		this.getCommand("torch").setTabCompleter(new TorchCommandTabCompleter());
 		
 		//Scheduler for particles
 		if(CONFIG.enableTorchParticles) {

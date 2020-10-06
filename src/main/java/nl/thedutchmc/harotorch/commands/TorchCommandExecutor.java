@@ -7,7 +7,10 @@ import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.harotorch.HaroTorch;
 import nl.thedutchmc.harotorch.commands.torchSubCmds.ConvertExecutor;
 import nl.thedutchmc.harotorch.commands.torchSubCmds.GiveExecutor;
+import nl.thedutchmc.harotorch.commands.torchSubCmds.HelpExecutor;
+import nl.thedutchmc.harotorch.commands.torchSubCmds.HighlightAreaOfEffectExecutor;
 import nl.thedutchmc.harotorch.commands.torchSubCmds.HighlightExecutor;
+import nl.thedutchmc.harotorch.commands.torchSubCmds.VersionExecutor;
 
 public class TorchCommandExecutor implements CommandExecutor {
 
@@ -26,8 +29,21 @@ public class TorchCommandExecutor implements CommandExecutor {
 		}
 		
 		if(args[0].equalsIgnoreCase("help")) {
+			if(!sender.hasPermission("harotorch.help")) {
+				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + "You do not have permission to use this command!");
+				return true;
+			}
 			
-			return true;
+			return HelpExecutor.help(sender);
+		}
+		
+		else if(args[0].equalsIgnoreCase("version")) {
+			if(!sender.hasPermission("harotorch.version")) {
+				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + "You do not have permission to use this command!");
+				return true;
+			}
+			
+			return VersionExecutor.version(sender, plugin);
 		}
 		
 		else if(args[0].equalsIgnoreCase("convert")) {
@@ -57,6 +73,16 @@ public class TorchCommandExecutor implements CommandExecutor {
 			return HighlightExecutor.highlight(sender, args, plugin);
 		}
 		
+		else if(args[0].equalsIgnoreCase("aoe")) {
+			if(!sender.hasPermission("harotorch.aoe")) {
+				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + "You do not have permission to use this command!");
+				return true;
+			}
+			
+			HighlightAreaOfEffectExecutor.aoe(sender, plugin);
+			
+			return true;
+		}
 		
 		return false;
 	}

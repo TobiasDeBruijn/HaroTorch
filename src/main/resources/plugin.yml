@@ -17,6 +17,9 @@ permissions:
    harotorch.give: true
    harotorch.convert: true
    harotorch.highlight: true
+   harotorch.help: true
+   harotorch.version: true
+   harotorch.aoe: true
  harotorch.give:
   description: /torch give
   default: op
@@ -25,4 +28,13 @@ permissions:
   default: op
  harotorch.highlight:
   description: /torch highlight
+  default: true
+ harotorch.help:
+  description: /torch help
+  default: true
+ harotorch.version:
+  description: /torch version
+  default: true
+ harotorch.aoe:
+  description: /torch aoe
   default: true

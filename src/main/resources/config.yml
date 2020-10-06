@@ -23,6 +23,9 @@ torchHighlightRange: 64
 #For how long should the Torches be higlighted. In seconds. Default: 30
 torchHighlightTime: 30
 
+#How many 'rows' of particles should be spawned when a user uses /torch aoe. Default: 10
+torchAoeParticleHeight: 10
+
 # Recipe for the Torch
 #
 # Example:

@@ -37,7 +37,6 @@ public class Highlight_1_16_r2 {
 			nmsEntity.setFlag(6, true); //Glowing
 			nmsEntity.setFlag(5, true); //Invisibility
 			nmsEntity.setSize(2, true); //Set the size of the magma cube to be a full block
-			
 			nmsEntity.setLocation(loc.getBlockX() + 0.5D, loc.getBlockY(), loc.getBlockZ() + 0.5D, 0f, 0f);
 			
 			PacketPlayOutSpawnEntityLiving spawnPacket = new PacketPlayOutSpawnEntityLiving(nmsEntity);

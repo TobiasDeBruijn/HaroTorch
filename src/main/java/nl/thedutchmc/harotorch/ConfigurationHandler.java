@@ -16,7 +16,7 @@ public class ConfigurationHandler {
 
 	public String torchBlock, messageTorchBrokenOwnerMismatch, messageTorchBrokenSuccess, messageTorchPlacedSucccess;
 	public boolean enableTorchParticles;
-	public int torchRange, torchHighlightRange, torchHighlightTime;
+	public int torchRange, torchHighlightRange, torchHighlightTime, torchAoeParticleHeight;
 	
 	public List<String> recipeShape;
 	public HashMap<Character, Material> recipeKeys = new HashMap<>();
@@ -63,6 +63,7 @@ public class ConfigurationHandler {
 		torchRange = this.getConfig().getInt("torchRange");
 		torchHighlightRange = this.getConfig().getInt("torchHighlightRange");
 		torchHighlightTime = this.getConfig().getInt("torchHighlightTime");
+		torchAoeParticleHeight = this.getConfig().getInt("torchAoeParticleHeight");
 		
 		//Recipe parsing
 		recipeShape = this.getConfig().getStringList("recipeShape");
