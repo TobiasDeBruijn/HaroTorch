@@ -25,13 +25,22 @@ allprojects {
    	 	
     }
     
+    print(pluginVersion)
+    
+	//processResources {
+    //	from(sourceSets.main.resources.srcDirs) {
+    //		filesMatching('plugin.yml') {
+    //    		filter ReplaceTokens, tokens: [version: "2.1.1"]
+     //   	}
+	//	}
+    //}
+    
 	processResources {
-    	from(sourceSets.main.resources.srcDirs) {
-    		filesMatching('plugin.yml') {
-        		filter ReplaceTokens, tokens: [version: pluginVersion]
-        	}
+    	from (sourceSets.main.resources) {
+     	   include 'plugin.yml'
+    	    filter(ReplaceTokens, tokens: ['version' : project.version])
 		}
-    }
+	}
 }
 
 dependencies {
@@ -61,4 +70,5 @@ task releaseJar(type: ShadowJar) {
 	from sourceSets.main.output
 	configurations = [project.configurations.runtime]
 	destinationDirectory = file("$rootDir/releases")
+	
 }
