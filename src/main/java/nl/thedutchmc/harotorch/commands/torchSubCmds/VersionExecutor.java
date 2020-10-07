@@ -1,3 +1,4 @@
+
 package nl.thedutchmc.harotorch.commands.torchSubCmds;
 
 import org.bukkit.ChatColor;
