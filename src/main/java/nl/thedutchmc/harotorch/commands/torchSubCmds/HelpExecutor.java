@@ -4,19 +4,20 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import nl.thedutchmc.harotorch.HaroTorch;
+import nl.thedutchmc.harotorch.lang.LangHandler;
 
 public class HelpExecutor {
 
 	public static boolean help(CommandSender sender) {
 		
-		sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + "HaroTorch help menu");
-		sender.sendMessage("-  " + ChatColor.GOLD + "/torch help " + ChatColor.WHITE + "Shows you this page.");
-		sender.sendMessage("-  " + ChatColor.GOLD + "/torch highlight " + ChatColor.WHITE + "Highlight all nearby torches.");
-		sender.sendMessage("-  " + ChatColor.GOLD + "/torch give " + ChatColor.WHITE + "Give yourself a HaroTorch.");
-		sender.sendMessage("-  " + ChatColor.GOLD + "/torch convert " + ChatColor.WHITE + "Convert v1 torches to v2 torches.");
-		sender.sendMessage("-  " + ChatColor.GOLD + "/torch version " + ChatColor.WHITE + "Get the HaroTorch and NMS version number.");
-
+		sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + LangHandler.activeLang.getLangMessages().get("helpMenuTitle"));
+		sender.sendMessage("-  " + ChatColor.GOLD + "/torch help " + ChatColor.WHITE + LangHandler.activeLang.getLangMessages().get("helpHelp"));
+		sender.sendMessage("-  " + ChatColor.GOLD + "/torch highlight " + ChatColor.WHITE + LangHandler.activeLang.getLangMessages().get("helpHighlight"));
+		sender.sendMessage("-  " + ChatColor.GOLD + "/torch give " + ChatColor.WHITE + LangHandler.activeLang.getLangMessages().get("helpGive"));
+		sender.sendMessage("-  " + ChatColor.GOLD + "/torch convert " + ChatColor.WHITE + LangHandler.activeLang.getLangMessages().get("helpConvert"));
+		sender.sendMessage("-  " + ChatColor.GOLD + "/torch version " + ChatColor.WHITE + LangHandler.activeLang.getLangMessages().get("helpVersion"));
+		sender.sendMessage("-  " + ChatColor.GOLD + "/torch aoe " + ChatColor.WHITE + LangHandler.activeLang.getLangMessages().get("helpAoe"));
+		
 		return true;
 	}
-	
 }

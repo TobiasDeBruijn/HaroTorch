@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.harotorch.HaroTorch;
+import nl.thedutchmc.harotorch.lang.LangHandler;
 import nl.thedutchmc.harotorch.torch.TorchHandler;
 
 public class GiveExecutor {
@@ -12,7 +13,7 @@ public class GiveExecutor {
 	public static boolean give(CommandSender sender, String[] args) {
 		
 		if(!(sender instanceof Player)) {
-			sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + "This command can only be used by Players!");
+			sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + LangHandler.activeLang.getLangMessages().get("commandOnlyForPlayers"));
 			return true;
 		}
 		
@@ -27,13 +28,13 @@ public class GiveExecutor {
 				count = Integer.valueOf(args[1]);
 				
 			} else {
-				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + "The given quantity is not a number!");
+				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + LangHandler.activeLang.getLangMessages().get("quantityNaN"));
 				return true;
 			}
 		}
 		
 		if(count <= 0) {
-			sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + "Quantity may not be 0 or negative!");
+			sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + LangHandler.activeLang.getLangMessages().get("quantityNegOrZero"));
 			return true;
 		}
 		

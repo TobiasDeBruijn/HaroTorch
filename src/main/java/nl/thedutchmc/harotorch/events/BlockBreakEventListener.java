@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.harotorch.HaroTorch;
+import nl.thedutchmc.harotorch.lang.LangHandler;
 import nl.thedutchmc.harotorch.torch.Torch;
 import nl.thedutchmc.harotorch.torch.TorchHandler;
 
@@ -23,7 +24,7 @@ public class BlockBreakEventListener implements Listener {
 		
 		if(TorchHandler.isTorch(loc_y_plus_1)) {
 			
-			event.getPlayer().sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + "You may not break this block. A HaroTorch stands ontop!");
+			event.getPlayer().sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + LangHandler.activeLang.getLangMessages().get("blockBreakNotAllowedTorchOntop"));
 			event.setCancelled(true);
 			
 			return;
@@ -36,7 +37,7 @@ public class BlockBreakEventListener implements Listener {
 		
 		UUID torchOwner = TorchHandler.getTorchOwner(loc);
 		if(!event.getPlayer().getUniqueId().equals(torchOwner)) {
-			event.getPlayer().sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + HaroTorch.getConfigHandler().messageTorchBrokenOwnerMismatch);
+			event.getPlayer().sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + LangHandler.activeLang.getLangMessages().get("blockBreakNotAllowedOwnerMismatch"));
 			
 			event.setCancelled(true);
 			
@@ -52,6 +53,6 @@ public class BlockBreakEventListener implements Listener {
 		
 		event.getBlock().getWorld().dropItemNaturally(loc, torchStack);
 		
-		event.getPlayer().sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + HaroTorch.getConfigHandler().messageTorchBrokenSuccess);
+		event.getPlayer().sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + LangHandler.activeLang.getLangMessages().get("torchBroken"));
 	}
 }

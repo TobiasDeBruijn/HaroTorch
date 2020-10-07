@@ -14,7 +14,7 @@ public class ConfigurationHandler {
 
 	private HaroTorch plugin;
 
-	public String torchBlock, messageTorchBrokenOwnerMismatch, messageTorchBrokenSuccess, messageTorchPlacedSucccess;
+	public String torchBlock, activeLang;
 	public boolean enableTorchParticles;
 	public int torchRange, torchHighlightRange, torchHighlightTime, torchAoeParticleHeight;
 	
@@ -54,9 +54,7 @@ public class ConfigurationHandler {
 	
 	public void readConfig() {
 		torchBlock = this.getConfig().getString("torchBlock");
-		messageTorchBrokenOwnerMismatch = this.getConfig().getString("messageTorchBrokenOwnerMismatch");
-		messageTorchBrokenSuccess = this.getConfig().getString("messageTorchBrokenSuccess");
-		messageTorchPlacedSucccess = this.getConfig().getString("messageTorchPlacedSucccess");
+		activeLang = this.getConfig().getString("activeLang");
 		
 		enableTorchParticles = this.getConfig().getBoolean("enableTorchParticles");
 		

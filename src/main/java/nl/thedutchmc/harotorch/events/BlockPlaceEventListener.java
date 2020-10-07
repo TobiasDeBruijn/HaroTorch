@@ -8,6 +8,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.harotorch.HaroTorch;
+import nl.thedutchmc.harotorch.lang.LangHandler;
 import nl.thedutchmc.harotorch.torch.Torch;
 import nl.thedutchmc.harotorch.torch.TorchHandler;
 
@@ -26,7 +27,7 @@ public class BlockPlaceEventListener implements Listener {
 			Location l = event.getBlock().getLocation();
 			TorchHandler.addTorch(new Torch(event.getPlayer().getUniqueId(), l));
 			
-			event.getPlayer().sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + HaroTorch.getConfigHandler().messageTorchPlacedSucccess);	
+			event.getPlayer().sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + LangHandler.activeLang.getLangMessages().get("torchPlaced"));	
 		}
 	}
 }

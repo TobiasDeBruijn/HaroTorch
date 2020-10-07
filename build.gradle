@@ -24,17 +24,7 @@ allprojects {
    	 	maven { url 'https://jitpack.io' }
    	 	
     }
-    
-    print(pluginVersion)
-    
-	//processResources {
-    //	from(sourceSets.main.resources.srcDirs) {
-    //		filesMatching('plugin.yml') {
-    //    		filter ReplaceTokens, tokens: [version: "2.1.1"]
-     //   	}
-	//	}
-    //}
-    
+        
 	processResources {
     	from (sourceSets.main.resources) {
      	   include 'plugin.yml'
@@ -49,6 +39,9 @@ dependencies {
 	
 	//We depend on the old HaroTorch so we can convert Torches to the v2 format
 	implementation 'com.github.TheDutchMC:HaroTorch:jmil-SNAPSHOT'
+	
+	//Apache Commons IO
+	compile group: 'commons-io', name: 'commons-io', version: '2.6'
 	
 	compile project('Spigot_1_16_R2')
 	

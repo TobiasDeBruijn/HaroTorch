@@ -11,6 +11,7 @@ import nl.thedutchmc.harotorch.commands.torchSubCmds.HelpExecutor;
 import nl.thedutchmc.harotorch.commands.torchSubCmds.HighlightAreaOfEffectExecutor;
 import nl.thedutchmc.harotorch.commands.torchSubCmds.HighlightExecutor;
 import nl.thedutchmc.harotorch.commands.torchSubCmds.VersionExecutor;
+import nl.thedutchmc.harotorch.lang.LangHandler;
 
 public class TorchCommandExecutor implements CommandExecutor {
 
@@ -24,13 +25,14 @@ public class TorchCommandExecutor implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		
 		if(args.length < 1) {
-			sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + "Missing arguments! Use " + ChatColor.RED + "/torch help" + ChatColor.GOLD + " for help!");
+			String msg = LangHandler.activeLang.getLangMessages().get("missingArguments").replaceAll("%HELP_COMMAND%", ChatColor.RED + "/torch help" + ChatColor.GOLD);
+			sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + msg);
 			return true;
 		}
 		
 		if(args[0].equalsIgnoreCase("help")) {
 			if(!sender.hasPermission("harotorch.help")) {
-				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + "You do not have permission to use this command!");
+				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + LangHandler.activeLang.getLangMessages().get("noPermission"));
 				return true;
 			}
 			
@@ -39,7 +41,7 @@ public class TorchCommandExecutor implements CommandExecutor {
 		
 		else if(args[0].equalsIgnoreCase("version")) {
 			if(!sender.hasPermission("harotorch.version")) {
-				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + "You do not have permission to use this command!");
+				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + LangHandler.activeLang.getLangMessages().get("noPermission"));
 				return true;
 			}
 			
@@ -48,7 +50,7 @@ public class TorchCommandExecutor implements CommandExecutor {
 		
 		else if(args[0].equalsIgnoreCase("convert")) {
 			if(!sender.hasPermission("harotorch.convert")) {
-				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + "You do not have permission to use this command!");
+				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + LangHandler.activeLang.getLangMessages().get("noPermission"));
 				return true;
 			}
 			
@@ -57,7 +59,7 @@ public class TorchCommandExecutor implements CommandExecutor {
 		
 		else if(args[0].equalsIgnoreCase("give")) {
 			if(!sender.hasPermission("harotorch.give")) {
-				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + "You do not have permission to use this command!");
+				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + LangHandler.activeLang.getLangMessages().get("noPermission"));
 				return true;
 			}
 			
@@ -66,7 +68,7 @@ public class TorchCommandExecutor implements CommandExecutor {
 		
 		else if(args[0].equalsIgnoreCase("highlight")) {
 			if(!sender.hasPermission("harotorch.highlight")) {
-				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + "You do not have permission to use this command!");
+				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + LangHandler.activeLang.getLangMessages().get("noPermission"));
 				return true;
 			}
 			
@@ -75,7 +77,7 @@ public class TorchCommandExecutor implements CommandExecutor {
 		
 		else if(args[0].equalsIgnoreCase("aoe")) {
 			if(!sender.hasPermission("harotorch.aoe")) {
-				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + "You do not have permission to use this command!");
+				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + LangHandler.activeLang.getLangMessages().get("noPermission"));
 				return true;
 			}
 			

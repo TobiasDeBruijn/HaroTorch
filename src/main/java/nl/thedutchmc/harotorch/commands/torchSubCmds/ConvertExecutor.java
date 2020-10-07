@@ -11,6 +11,7 @@ import org.bukkit.plugin.Plugin;
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.haro_torch.plugin.torch.Torchy;
 import nl.thedutchmc.harotorch.HaroTorch;
+import nl.thedutchmc.harotorch.lang.LangHandler;
 import nl.thedutchmc.harotorch.torch.Torch;
 import nl.thedutchmc.harotorch.torch.TorchHandler;
 
@@ -19,11 +20,11 @@ public class ConvertExecutor {
 	public static boolean convert(CommandSender sender) {
 		
 		if(Bukkit.getPluginManager().getPlugin("HaroTorch") == null) {
-			sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + "HaroTorch v1 is not installed. Aborting.");
+			sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + LangHandler.activeLang.getLangMessages().get("v1NotInstalledMessage"));
 			return true;
 		}
 		
-		sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + "Converting HaroTorch v1 Torches to v2...");
+		sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + LangHandler.activeLang.getLangMessages().get("convertingToV2Start"));
 		
 		List<Torchy> torchys = nl.thedutchmc.haro_torch.plugin.torch.TorchHandler.getTorches();
 		
@@ -41,7 +42,7 @@ public class ConvertExecutor {
 			TorchHandler.addTorch(new Torch(owner, loc));
 		}
 		
-		sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + "Conversion complete. Disabling HaroTorch v1!");
+		sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + LangHandler.activeLang.getLangMessages().get("convertingToV2Complete"));
 		
 		Plugin haroTorchV1 = Bukkit.getPluginManager().getPlugin("HaroTorch");
 		

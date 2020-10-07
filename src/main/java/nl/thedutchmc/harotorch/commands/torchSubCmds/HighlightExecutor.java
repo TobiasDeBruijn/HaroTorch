@@ -9,6 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.harotorch.HaroTorch;
+import nl.thedutchmc.harotorch.lang.LangHandler;
 import nl.thedutchmc.harotorch.torch.TorchHandler;
 
 public class HighlightExecutor {
@@ -23,11 +24,13 @@ public class HighlightExecutor {
 		switch(HaroTorch.NMS_VERSION) {
 		case "v1_16_R2": returnedIds = Highlight_1_16_r2.spawnHighlight(p, nearbyTorches); break;
 		default:
-			p.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + "The highlight feature is not supported on this version of Minecraft! (" + HaroTorch.NMS_VERSION + ")");
+			String msg = LangHandler.activeLang.getLangMessages().get("highlightVersionNotSupported").replaceAll("%NMS_VERSION%", HaroTorch.NMS_VERSION);
+			p.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + msg);
 			return true;
 		}
 		
-		p.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + "Highlighting all Torches for " + ChatColor.RED + HaroTorch.getConfigHandler().torchHighlightTime + ChatColor.GOLD + " seconds!");
+		String msg = LangHandler.activeLang.getLangMessages().get("startingHiglight").replaceAll("%SECONDS%", ChatColor.RED + String.valueOf(HaroTorch.getConfigHandler().torchHighlightTime) + ChatColor.GOLD);
+		p.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + msg);
 		
 		new BukkitRunnable() {
 			
@@ -39,7 +42,7 @@ public class HighlightExecutor {
 				
 				}
 				
-				p.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + "Highlighting has ended!");
+				p.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + LangHandler.activeLang.getLangMessages().get("endingHighlight"));
 
 			}
 		}.runTaskLater(plugin, HaroTorch.getConfigHandler().torchHighlightTime * 20);

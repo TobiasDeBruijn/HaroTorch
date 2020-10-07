@@ -17,6 +17,7 @@ import nl.thedutchmc.harotorch.events.BlockFromToEventListener;
 import nl.thedutchmc.harotorch.events.BlockPlaceEventListener;
 import nl.thedutchmc.harotorch.events.CreatureSpawnEventListener;
 import nl.thedutchmc.harotorch.events.EntityExplodeEventListener;
+import nl.thedutchmc.harotorch.lang.LangHandler;
 import nl.thedutchmc.harotorch.torch.Recipe;
 import nl.thedutchmc.harotorch.torch.TorchHandler;
 
@@ -25,9 +26,7 @@ public class HaroTorch extends JavaPlugin {
 	private static ConfigurationHandler CONFIG;
 	
 	public static double RANGE;
-	
 	public static final String NMS_VERSION = Bukkit.getServer().getClass().getPackage().getName().substring(23);
-	
 	
 	@Override
 	public void onEnable() {
@@ -35,6 +34,11 @@ public class HaroTorch extends JavaPlugin {
 		
 		CONFIG = new ConfigurationHandler(this);
 		CONFIG.loadConfig();
+		
+		LangHandler langHandler = new LangHandler(this);
+		langHandler.load();
+		
+		logInfo(LangHandler.activeLang.getLangMessages().get("welcome"));
 		
 		RANGE = Math.pow(CONFIG.torchRange, 2);
 		
@@ -79,6 +83,11 @@ public class HaroTorch extends JavaPlugin {
 				}
 			}.runTaskTimer(this, 60L, 20L);
 		}
+	}
+	
+	@Override
+	public void onDisable() {
+		logInfo(LangHandler.activeLang.getLangMessages().get("goodbye"));
 	}
 	
 	public void logInfo(String log) {

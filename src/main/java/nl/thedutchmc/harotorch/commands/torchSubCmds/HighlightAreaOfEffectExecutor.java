@@ -14,13 +14,15 @@ import org.bukkit.scheduler.BukkitTask;
 
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.harotorch.HaroTorch;
+import nl.thedutchmc.harotorch.lang.LangHandler;
 import nl.thedutchmc.harotorch.torch.TorchHandler;
 
 public class HighlightAreaOfEffectExecutor {
 
 	public static boolean aoe(CommandSender sender, HaroTorch plugin) {
 		
-		sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + "Showing the area of effect for " + ChatColor.RED + HaroTorch.getConfigHandler().torchHighlightTime + ChatColor.GOLD + " seconds!");
+		String msg = LangHandler.activeLang.getLangMessages().get("startingAoe").replaceAll("%SECONDS%", ChatColor.RED + String.valueOf(HaroTorch.getConfigHandler().torchHighlightTime) + ChatColor.GOLD);
+		sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + msg);
 		
 		List<Location> nearbyTorches = TorchHandler.getTorchLocationsNearPlayer((Player) sender, HaroTorch.getConfigHandler().torchHighlightRange);
 		final List<TorchParticleObject> torchParticles = new ArrayList<>();
@@ -80,7 +82,7 @@ public class HighlightAreaOfEffectExecutor {
 			@Override
 			public void run() {
 				particle.cancel();
-				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + "Highlighting has ended!");
+				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + LangHandler.activeLang.getLangMessages().get("endingAoe"));
 			}
 		}.runTaskLater(plugin, 30L * 20L);
 		
