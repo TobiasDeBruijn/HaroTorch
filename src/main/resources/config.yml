@@ -17,6 +17,8 @@ torchHighlightTime: 30
 #How many 'rows' of particles should be spawned when a user uses /torch aoe. Default: 10
 torchAoeParticleHeight: 10
 
+activeLang: "en"
+
 # Recipe for the Torch
 #
 # Example:
