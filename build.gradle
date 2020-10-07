@@ -1,7 +1,6 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-
 plugins {
     id 'java'
     id 'eclipse'
@@ -28,7 +27,9 @@ allprojects {
     
 	processResources {
     	from(sourceSets.main.resources.srcDirs) {
-        	filter ReplaceTokens, tokens: [version: version]
+    		filesMatching('plugin.yml') {
+        		filter ReplaceTokens, tokens: [version: pluginVersion]
+        	}
 		}
     }
 }

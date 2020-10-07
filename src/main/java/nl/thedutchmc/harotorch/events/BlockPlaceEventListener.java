@@ -18,6 +18,9 @@ public class BlockPlaceEventListener implements Listener {
 	public void onBlockPlaceEvent(BlockPlaceEvent event) {
 		
 		ItemStack blockPlacing = event.getPlayer().getItemInHand();
+		
+		if(!blockPlacing.hasItemMeta()) return;
+		
 		if(blockPlacing.getItemMeta().getDisplayName().equals(ChatColor.AQUA + "HaroTorch")) {
 			
 			Location l = event.getBlock().getLocation();
