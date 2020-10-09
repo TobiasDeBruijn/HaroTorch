@@ -18,7 +18,7 @@
   7. Start your server
   
   ### Credits
-  - EN : TheDutchMC
-  - NL : TheDutchMC
-  - CN (Simplified) : [Sancaros](https://www.spigotmc.org/members/sancaros.203424/) via E-mail
+  - English (`en`) provided by TheDutchMC
+  - Dutch (`nl`) provided by TheDutchMC
+  - Chinese (Simplified) (`cn_simplified`) provided by [Sancaros](https://www.spigotmc.org/members/sancaros.203424/) via E-mail
   
