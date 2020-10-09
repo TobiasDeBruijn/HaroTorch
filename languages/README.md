@@ -9,7 +9,16 @@
   and include the translation. You can also E-mail it to github@thedutchmc.nl, make sure you include your GitHub profile, or your SpigotMC profile so I can credit you appropriately.  
   If you know how to work with Git, you may also open a Pull Request.
   
-  ### Authors
+  ### Using the language files
+  1. Stop your server
+  2. Download the language file you want, e.g `nl.properties`
+  3. Put the downloaded file in `yourServer/plugins/HaroTorch-V2/Lang/`
+  4. in `yourServer/plugins/HaroTorch-v2/` open `config.yml` in your favourite editor
+  5. Edit the option `activeLang` to match the filename, without file extension, of the language you downloaded. In this example it would become: `activeLang: "nl"`
+  6. Save the config file
+  7. Start your server
+  
+  ### Credits
   - EN : TheDutchMC
   - NL : TheDutchMC
   - CN (Simplified) : [Sancaros](https://www.spigotmc.org/members/sancaros.203424/) via E-mail
