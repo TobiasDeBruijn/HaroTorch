@@ -20,5 +20,9 @@
   ### Credits
   - English (`en`) provided by TheDutchMC
   - Dutch (`nl`) provided by TheDutchMC
-  - Chinese (Simplified) (`cn_simplified`) provided by [Sancaros](https://www.spigotmc.org/members/sancaros.203424/) via E-mail
+  - Chinese (Simplified) (`cn_simplified`) provided by Sancaros via E-mail
+  - Philipino (`ph`) provided by FallSky via Discord
+  - Swedish (`se`) provided by Indominus_Gaming via Discord
+  - Russian (`ru`) provided by AZelenka via Discord
+  - German (`de`) provided by Milo via Discord
   
