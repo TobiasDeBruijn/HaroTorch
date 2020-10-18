@@ -27,4 +27,4 @@
   - German (`de`) provided by Milo via Discord
   - Czech (`cz`) provided by Hollie_Bety via Discord
   - Finnish (`fin`) provided by Mixinu via Discord
-  
+  - Danish (`da`) provided by Deimon via Discord
