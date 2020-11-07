@@ -44,6 +44,7 @@ dependencies {
 	compile group: 'commons-io', name: 'commons-io', version: '2.6'
 	
 	compile project('Spigot_1_16_R2')
+	compile project('Spigot_1_16_R3')
 	
 }
 

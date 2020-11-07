@@ -23,6 +23,7 @@ public class HighlightExecutor {
 		
 		switch(HaroTorch.NMS_VERSION) {
 		case "v1_16_R2": returnedIds = Highlight_1_16_r2.spawnHighlight(p, nearbyTorches); break;
+		case "v1_16_R3": returnedIds = Highlight_1_16_r3.spawnHighlight(p, nearbyTorches); break;
 		default:
 			String msg = LangHandler.activeLang.getLangMessages().get("highlightVersionNotSupported").replaceAll("%NMS_VERSION%", HaroTorch.NMS_VERSION);
 			p.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + msg);
@@ -39,7 +40,8 @@ public class HighlightExecutor {
 
 				switch(HaroTorch.NMS_VERSION) {
 				case "v1_16_R2": Highlight_1_16_r2.killHighlighted(returnedIds, p); break;
-				
+				case "v1_16_R3": Highlight_1_16_r3.killHighlighted(returnedIds, p); break;
+
 				}
 				
 				p.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + LangHandler.activeLang.getLangMessages().get("endingHighlight"));
