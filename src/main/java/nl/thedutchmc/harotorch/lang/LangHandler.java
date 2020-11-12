@@ -17,6 +17,7 @@ import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 
+import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.harotorch.HaroTorch;
 
 public class LangHandler {
@@ -85,7 +86,16 @@ public class LangHandler {
 			langMap.put(key, value);
 		}
 		
-		activeLang= new Language(lang, langMap);
+		activeLang = new Language(lang, langMap);
+		
+		//These checks are here because new keys are added over time
+		if(!activeLang.getLangMessages().containsKey("torchTitle")) {
+			activeLang.getLangMessages().put("torchTitle", ChatColor.AQUA + "HaroTorch");
+		}
+		
+		if(!activeLang.getLangMessages().containsKey("torchLore")) {
+			activeLang.getLangMessages().put("torchLore", "Blocks mob spawns in a configurable radius");
+		}
 	}
 	
 	private List<String> discover() {

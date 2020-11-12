@@ -8,23 +8,26 @@ import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataType;
 
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.harotorch.HaroTorch;
+import nl.thedutchmc.harotorch.lang.LangHandler;
 
 public class TorchHandler {
 	
-	private HaroTorch plugin;
+	private static HaroTorch plugin;
 	
 	private static HashMap<Location, Torch> torches = new HashMap<>();
 	private static StorageHandler STORAGE;
 	
 	public TorchHandler(HaroTorch plugin) {		
-		this.plugin = plugin;
+		TorchHandler.plugin = plugin;
 	}
 	
 	public void setup() {
@@ -84,14 +87,17 @@ public class TorchHandler {
 
 	public static ItemStack getTorch(int count) {
 		
-		ItemStack stack = new ItemStack(Material.matchMaterial(HaroTorch.getConfigHandler().torchBlock));		
+		ItemStack stack = new ItemStack(Material.matchMaterial(HaroTorch.getConfigHandler().torchBlock));
 		ItemMeta meta = stack.getItemMeta();
 
 		List<String> lore = new ArrayList<>();
-		lore.add("Prevent monsters from spawning in a " + HaroTorch.getConfigHandler().torchRange + " block radius");
+		lore.add(LangHandler.activeLang.getLangMessages().get("torchLore").replaceAll("%TORCH_RADIUS%", String.valueOf(HaroTorch.getConfigHandler().torchRange)));
 		
 		meta.setLore(lore);
-		meta.setDisplayName(ChatColor.AQUA + "HaroTorch");
+		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', LangHandler.activeLang.getLangMessages().get("torchTitle")));
+		
+		NamespacedKey key = new NamespacedKey(plugin, "haro_torch");
+		meta.getPersistentDataContainer().set(key, PersistentDataType.INTEGER, 1);
 		
 		stack.setItemMeta(meta);
 		stack.addUnsafeEnchantment(Enchantment.MENDING, 1);

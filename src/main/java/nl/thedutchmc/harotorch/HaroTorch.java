@@ -52,7 +52,7 @@ public class HaroTorch extends JavaPlugin {
 		
 		//Minecraft events
 		Bukkit.getPluginManager().registerEvents(new BlockBreakEventListener(), this);
-		Bukkit.getPluginManager().registerEvents(new BlockPlaceEventListener(), this);
+		Bukkit.getPluginManager().registerEvents(new BlockPlaceEventListener(this), this);
 		Bukkit.getPluginManager().registerEvents(new CreatureSpawnEventListener(), this);
 		Bukkit.getPluginManager().registerEvents(new BlockFromToEventListener(), this);
 		Bukkit.getPluginManager().registerEvents(new BlockExplodeEventListener(), this);
