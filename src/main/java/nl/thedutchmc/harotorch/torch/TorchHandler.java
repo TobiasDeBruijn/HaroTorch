@@ -116,7 +116,7 @@ public class TorchHandler {
 		for(Map.Entry<Location, Torch> entry : torches.entrySet()) {
 			Location l = entry.getKey();
 			
-			if(!l.getWorld().equals(player.getLocation().getWorld())) continue;
+			if(!l.getWorld().getName().equals(player.getLocation().getWorld().getName())) continue;
 			
 			if(l.distanceSquared(player.getLocation()) < Math.pow(radius, 2)) {
 				result.add(l);
