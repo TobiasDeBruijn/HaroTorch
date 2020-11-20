@@ -1,0 +1,16 @@
+
+modLoader="javafml"
+loaderVersion="[35,)"
+license="All rights reserved"
+[[mods]]
+modId="nmsdebugger"
+version="${file.jarVersion}"
+displayName="NMS Debugger"
+description='''
+Someday I'll write this.
+
+No I wont. I'm lying and you know it.
+'''
+    versionRange="[1.16.4,1.17)"
+    ordering="NONE"
+    side="CLIENT"
