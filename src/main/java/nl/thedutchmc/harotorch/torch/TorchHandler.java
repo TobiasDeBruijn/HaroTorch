@@ -91,7 +91,7 @@ public class TorchHandler {
 		ItemMeta meta = stack.getItemMeta();
 
 		List<String> lore = new ArrayList<>();
-		lore.add(LangHandler.activeLang.getLangMessages().get("torchLore").replaceAll("%TORCH_RADIUS%", String.valueOf(HaroTorch.getConfigHandler().torchRange)));
+		lore.add(ChatColor.translateAlternateColorCodes('&', LangHandler.activeLang.getLangMessages().get("torchLore").replaceAll("%TORCH_RADIUS%", String.valueOf(HaroTorch.getConfigHandler().torchRange))));
 		
 		meta.setLore(lore);
 		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', LangHandler.activeLang.getLangMessages().get("torchTitle")));

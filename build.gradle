@@ -43,8 +43,9 @@ dependencies {
 	//Apache Commons IO
 	compile group: 'commons-io', name: 'commons-io', version: '2.6'
 	
-	compile project('Spigot_1_16_R2')
-	compile project('Spigot_1_16_R3')
+	//Should no longer be needed after Reflection is properly implemented
+	//compile project('Spigot_1_16_R2')
+	//compile project('Spigot_1_16_R3')
 	
 }
 

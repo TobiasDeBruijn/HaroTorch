@@ -20,6 +20,7 @@ permissions:
    harotorch.help: true
    harotorch.version: true
    harotorch.aoe: true
+   harotorch.admin: true
  harotorch.give:
   description: /torch give
   default: op
@@ -38,3 +39,6 @@ permissions:
  harotorch.aoe:
   description: /torch aoe
   default: true
+ harotorch.admin:
+  description: /torch admin
+  default: op

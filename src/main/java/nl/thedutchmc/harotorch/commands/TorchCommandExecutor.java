@@ -5,6 +5,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.harotorch.HaroTorch;
+import nl.thedutchmc.harotorch.commands.torchSubCmds.AdminCommandExecutor;
 import nl.thedutchmc.harotorch.commands.torchSubCmds.ConvertExecutor;
 import nl.thedutchmc.harotorch.commands.torchSubCmds.GiveExecutor;
 import nl.thedutchmc.harotorch.commands.torchSubCmds.HelpExecutor;
@@ -82,6 +83,17 @@ public class TorchCommandExecutor implements CommandExecutor {
 			}
 			
 			HighlightAreaOfEffectExecutor.aoe(sender, plugin);
+			
+			return true;
+		}
+		
+		else if(args[0].equalsIgnoreCase("admin")) {
+			if(!sender.hasPermission("harotorch.admin")) {
+				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + LangHandler.activeLang.getLangMessages().get("noPermission"));
+				return true;
+			}
+			
+			AdminCommandExecutor.admin(sender);
 			
 			return true;
 		}

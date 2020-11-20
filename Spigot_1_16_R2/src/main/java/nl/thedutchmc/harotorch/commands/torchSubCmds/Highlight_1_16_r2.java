@@ -33,7 +33,7 @@ public class Highlight_1_16_r2 {
 			EntityMagmaCube nmsEntity = new EntityMagmaCube(EntityTypes.MAGMA_CUBE, nmsWorld);
 					
 			nmsEntity.setInvisible(false);
-			nmsEntity.collides = false; //Colllision
+			nmsEntity.collides = false; //Collision
 			nmsEntity.setFlag(6, true); //Glowing
 			nmsEntity.setFlag(5, true); //Invisibility
 			nmsEntity.setSize(2, true); //Set the size of the magma cube to be a full block

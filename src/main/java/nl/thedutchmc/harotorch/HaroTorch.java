@@ -1,5 +1,9 @@
 package nl.thedutchmc.harotorch;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -27,6 +31,7 @@ public class HaroTorch extends JavaPlugin {
 	
 	public static double RANGE;
 	public static final String NMS_VERSION = Bukkit.getServer().getClass().getPackage().getName().substring(23);
+	public static List<UUID> activeAdmins = new ArrayList<>();
 	
 	@Override
 	public void onEnable() {

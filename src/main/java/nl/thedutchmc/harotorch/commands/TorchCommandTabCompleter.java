@@ -20,6 +20,7 @@ public class TorchCommandTabCompleter implements TabCompleter {
 			if(sender.hasPermission("harotorch.convert")) result.add("convert");
 			if(sender.hasPermission("harotorch.version")) result.add("version");
 			if(sender.hasPermission("harotorch.aoe")) result.add("aoe");
+			if(sender.hasPermission("harotorch.admin")) result.add("admin");
 			
 			return result;
 		}
