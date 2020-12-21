@@ -21,13 +21,15 @@ import nl.thedutchmc.harotorch.lang.LangHandler;
 import nl.thedutchmc.harotorch.torch.TorchHandler;
 import nl.thedutchmc.harotorch.util.NmsUtil;
 
+import nl.thedutchmc.harotorch.commands.torchSubCmds.Highlight_1_16_r3;
+
 public class HighlightExecutor {
 	
 	public static boolean highlight(CommandSender sender, String[] args, HaroTorch plugin) {
 		
 		List<Location> nearbyTorches = TorchHandler.getTorchLocationsNearPlayer((Player) sender, HaroTorch.getConfigHandler().torchHighlightRange);
 		Player p = (Player) sender;
-		
+				
 		List<Integer> returnedIds;
 		
 		switch(HaroTorch.NMS_VERSION) {
@@ -90,7 +92,7 @@ public class HighlightExecutor {
 			
 			//PacketPlayOutSpawnEntityLiving class
 			Class<?> packetPlayOutSpawnEntityLivingClass = nmsUtil.getNmsClass("PacketPlayOutSpawnEntityLiving");
-			Constructor<?> packetPlayOutSpawnEntityLivingConstructor = packetPlayOutSpawnEntityLivingClass.getConstructor();
+			Constructor<?> packetPlayOutSpawnEntityLivingConstructor = packetPlayOutSpawnEntityLivingClass.getConstructor();			
 			
 			//Packet Interface
 			//We know that PacketPlayOutSpawnEntityLiving only implements one Interface
@@ -103,17 +105,17 @@ public class HighlightExecutor {
 			//Fields from class PacketPlayOutSpawnEntityLiving
 			Field entityIdField = packetPlayOutSpawnEntityLivingClass.getDeclaredField("a");
 			Field entityUuidField = packetPlayOutSpawnEntityLivingClass.getDeclaredField("b");
-			Field entityType = packetPlayOutSpawnEntityLivingClass.getDeclaredField("c");
-			Field entityX = packetPlayOutSpawnEntityLivingClass.getDeclaredField("d");
-			Field entityY = packetPlayOutSpawnEntityLivingClass.getDeclaredField("e");
-			Field entityZ = packetPlayOutSpawnEntityLivingClass.getDeclaredField("f");
-
+			Field entityTypeField = packetPlayOutSpawnEntityLivingClass.getDeclaredField("c");
+			Field entityXField = packetPlayOutSpawnEntityLivingClass.getDeclaredField("d");
+			Field entityYField = packetPlayOutSpawnEntityLivingClass.getDeclaredField("e");
+			Field entityZField = packetPlayOutSpawnEntityLivingClass.getDeclaredField("f");
+			
 			//Entity class, Entity#setFlag(int flagId, boolean flagValue), Entity#setLocation(double x, double y, double z, float xRot, float yRot), Entity#getId()
 			Class<?> entityClass = nmsUtil.getNmsClass("Entity");
 			Method setFlagMethod = entityClass.getDeclaredMethod("setFlag", int.class, boolean.class);
 			Method setLocationMethod = entityClass.getDeclaredMethod("setLocation", double.class, double.class, double.class, float.class, float.class);
 			Method getIdMethod = entityClass.getDeclaredMethod("getId");
-			
+						
 			//DataWatcher class, DataWatcher#getDataWatcher()
 			Class<?> dataWatcherClass = nmsUtil.getNmsClass("DataWatcher");
 			Method getDataWatcherMethod = entityClass.getDeclaredMethod("getDataWatcher");
@@ -138,8 +140,8 @@ public class HighlightExecutor {
 				//Create a nmsWorld object
 				Object nmsWorld = getHandleWorld.invoke(w);
 
+				//DEBUG LINE
 				System.out.println(nmsWorld);
-
 				
 				//EntityMagmaCube class
 				Class<?> entityMagmaCubeClass = nmsUtil.getNmsClass("EntityMagmaCube");
@@ -148,7 +150,9 @@ public class HighlightExecutor {
 				//Create an EntityMagmaCube object
 				Object entityMagmaCube = entityMagmaCubeConstructor.newInstance(magmaCubeField.get(null), nmsWorld);
 				
+				//DEBUG LINE
 				System.out.println(entityMagmaCube);
+				System.out.println(magmaCubeField.get(null));
 				
 				//Set metadata on the entity
 				//Reference: https://wiki.vg/Entity_metadata#Entity_Metadata_Format
@@ -159,8 +163,10 @@ public class HighlightExecutor {
 								
 				//Create a PacketPlayOutSpawnEntityLiving object
 				Object spawnPacket = packetPlayOutSpawnEntityLivingConstructor.newInstance();
+				
 				int entityId = 0;
 				
+				//DEBUG LINE
 				System.out.println(spawnPacket);
 				
 				//Get the ID of the above created EntiyMagmaCube
@@ -178,34 +184,73 @@ public class HighlightExecutor {
 				
 				//Set the entity type to minecraft:magma cube
 				//Reference: https://wiki.vg/Entity_metadata#Mobs
-				entityType.setAccessible(true);
-				entityType.setInt(spawnPacket, 44);
-				entityType.setAccessible(false);
+				entityTypeField.setAccessible(true);
+				entityTypeField.setInt(spawnPacket, 44);
+				entityTypeField.setAccessible(false);
 				
 				//Set the entity's X position
-				entityX.setAccessible(true);
-				entityX.setDouble(spawnPacket, l.getBlockX() + 0.5d);
-				entityX.setAccessible(false);
+				entityXField.setAccessible(true);
+				entityXField.setDouble(spawnPacket, l.getBlockX() + 0.5d);
+				entityXField.setAccessible(false);
 				
 				//Set the entity's Y position
-				entityY.setAccessible(true);
-				entityY.setDouble(spawnPacket, l.getBlockY());
-				entityY.setAccessible(false);
+				entityYField.setAccessible(true);
+				entityYField.setDouble(spawnPacket, l.getBlockY());
+				entityYField.setAccessible(false);
 				
 				//Set the entity's Z position
-				entityZ.setAccessible(true);
-				entityZ.setDouble(spawnPacket, l.getBlockZ() + 0.5d);
-				entityZ.setAccessible(false);
+				entityZField.setAccessible(true);
+				entityZField.setDouble(spawnPacket, l.getBlockZ() + 0.5d);
+				entityZField.setAccessible(false);
 				
 				//Create a PacketPlayOutEntityMetadata object
 				Object dataWatcher = getDataWatcherMethod.invoke(nmsPlayer);
 				
+				//DEBUG
 				System.out.println(dataWatcher);
+				
+				Method a = dataWatcherClass.getMethod("a");
+				Method b = dataWatcherClass.getMethod("b");
+				Method c = dataWatcherClass.getMethod("c");
+				Method d = dataWatcherClass.getMethod("d");
+				
+				System.out.println("a: " + a.invoke(dataWatcher));
+				System.out.println("b: " + b.invoke(dataWatcher));
+				System.out.println("c: " + c.invoke(dataWatcher));
+				System.out.println("d: " + d.invoke(dataWatcher));
+				
+				List<Object> dwCL = (List<Object>) c.invoke(dataWatcher);
+				System.out.println("w14: " + dwCL.get(14));
+				
+				
+				int i = 0;
+				for(Object o : dwCL) {
+					Method o_a_m = dwCL.get(i).getClass().getMethod("a");
+					Object o_a_o = o_a_m.invoke(dwCL.get(i));
+					
+					System.out.println("a" + i + ": " + o_a_o);
+
+					Method o_aa_m = o_a_o.getClass().getMethod("a");
+					Object o_aa_o = o_aa_m.invoke(o_a_o);
+					
+					System.out.println("aa" + i + ": " + o_aa_o);
+					
+					Method o_ab_m = o_a_o.getClass().getMethod("b");
+					Object o_ab_o = o_ab_m.invoke(o_a_o);
+					
+					System.out.println("ab"  + i + ": " + o_ab_o);
+					
+					
+					i++;
+				}
 				
 				Object metaPacket = packetPlayOutEntityMetadataConstructor.newInstance(entityId, dataWatcher, true);
 
 				System.out.println(metaPacket);
 
+				System.out.println(entityMagmaCube);
+				//END DEBUG
+				
 				//Send the PacketPlayOutSpawnEntityLiving and PacketPlayOutEntityMetadata packets to the client
 				sendPacket.invoke(playerConnection, spawnPacket);
 				sendPacket.invoke(playerConnection, metaPacket);

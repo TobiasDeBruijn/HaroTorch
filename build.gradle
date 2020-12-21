@@ -45,7 +45,7 @@ dependencies {
 	
 	//Should no longer be needed after Reflection is properly implemented
 	//compile project('Spigot_1_16_R2')
-	//compile project('Spigot_1_16_R3')
+	compile project('Spigot_1_16_R3')
 	
 }
 
