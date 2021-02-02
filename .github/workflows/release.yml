@@ -16,6 +16,28 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.11
+
+    # create directory for buildtools
+    - name: Create directory for BuildTools
+      run: mkdir -p /tmp/buildtools/1_16_R2 /tmp/buildtools/1_16_R3
+    #Get BuildTools
+    - name: BuildTools
+      run: curl -o /tmp/BuildTools.jar
+      
+    #Spigot 1_16_R2
+    - name: Spigot 1_16_R2 BuildTools
+      run: cp /tmp/BuildTools.jar /tmp/buildtools/1_16_R2/BuildTools.jar
+
+    - name: Build Spigot 1_16_R2
+      run: cd /tmp/buildtools/1_16_R2 && java -jar /tmp/buildtools/1_16_R2/BuildTools.jar --rev 1.16.2
+
+    #Spigot 1_16_R3
+    - name: Spigot 1_16_R3 BuildTools
+      run: cp /tmp/BuildTools.jar /tmp/buildtools/1_16_R3/BuildTools.jar
+
+    - name: Build Spigot 1_16_R3
+      run: cd /tmp/buildtools/1_16_R3 && java -jar /tmp/buildtools/1_16_R2/BuildTools.jar --rev 1.16.4
+
     #Apply permissions for Gradle, so that ./gradlew can run
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
