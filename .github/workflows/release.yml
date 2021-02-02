@@ -20,9 +20,10 @@ jobs:
     # create directory for buildtools
     - name: Create directory for BuildTools
       run: mkdir -p /tmp/buildtools/1_16_R2 /tmp/buildtools/1_16_R3
+      
     #Get BuildTools
     - name: BuildTools
-      run: curl -o /tmp/BuildTools.jar
+      run: curl -o /tmp/BuildTools.jar https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
       
     #Spigot 1_16_R2
     - name: Spigot 1_16_R2 BuildTools
