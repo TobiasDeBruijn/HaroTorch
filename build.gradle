@@ -13,8 +13,8 @@ allprojects {
 	version = pluginVersion
 	group = pluginGroup	
 
-	sourceCompatibility = 1.8
-	targetCompatibility = 1.8
+	sourceCompatibility = 1.11
+	targetCompatibility = 1.11
 
 	repositories {
 		jcenter()
@@ -38,7 +38,7 @@ dependencies {
 	compileOnly 'org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT'
 	
 	//We depend on the old HaroTorch so we can convert Torches to the v2 format
-	implementation 'com.github.TheDutchMC:HaroTorch:jmil-SNAPSHOT'
+	implementation 'com.github.TheDutchMC:HaroTorch:v1-SNAPSHOT'
 	
 	//Apache Commons IO
 	compile group: 'commons-io', name: 'commons-io', version: '2.6'
@@ -49,20 +49,33 @@ dependencies {
 }
 
 task testJar(type: ShadowJar) {
-	
 	description 'Build a test Jar'
 	archiveClassifier = 'DEV'
+
 	from sourceSets.main.output
 	configurations = [project.configurations.runtime]
+	
 	destinationDirectory = file("$rootDir/server/plugins")
 }
 
 task releaseJar(type: ShadowJar) {
-
 	description 'Build a release Jar'
 	archiveClassifier = 'RELEASE'
+
 	from sourceSets.main.output
 	configurations = [project.configurations.runtime]
-	destinationDirectory = file("$rootDir/releases")
 	
+	destinationDirectory = file("$rootDir/releases")
+}
+
+task ghActions(type: ShadowJar) {
+	description 'GitHub Actions task. Not used for regular development'
+	version = ''
+	archiveClassifier = ''
+	archiveBaseName = 'output'
+
+	from sourceSets.main.output
+	configurations = [project.configurations.runtime]
+
+	destinationDirectory = file("$rootDir/actions")
 }

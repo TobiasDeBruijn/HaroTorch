@@ -30,13 +30,12 @@ public class BlockBreakEventListener implements Listener {
 			return;
 		}
 		
-		
 		if(!TorchHandler.isTorch(loc)) {
 			return;
 		}
 		
 		UUID torchOwner = TorchHandler.getTorchOwner(loc);
-		if(!event.getPlayer().getUniqueId().equals(torchOwner)) {
+		if(!HaroTorch.getConfigHandler().allowRemoveNotOwnedTorch && !event.getPlayer().getUniqueId().equals(torchOwner)) {
 			event.getPlayer().sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + LangHandler.activeLang.getLangMessages().get("blockBreakNotAllowedOwnerMismatch"));
 			
 			event.setCancelled(true);

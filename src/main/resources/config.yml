@@ -44,3 +44,22 @@ recipeKeys:
 - "x<-->minecraft:air"
 - "g<-->minecraft:gold_ingot"
 - "t<-->minecraft:torch"
+
+#Should people be able to remove other people's torches. Default: false
+allowRemoveNotOwnedTorch: false
+
+#Should only hostile mobs be prevented from spawning. Default: true
+#Note: Withers and Ender dragons are always spawnable
+onlyBlockHostileMobs: true
+
+# What mobs should be excluded from the block list
+# Should NOT include minecraft: prefix!
+#
+# Example:
+# 
+# mobsExcludeFromBlockList:
+# - "zombie"
+# - "zombie_pigman"
+#
+# It is important that the format matches what Minecraft itself uses!
+mobsExcludeFromBlockList:

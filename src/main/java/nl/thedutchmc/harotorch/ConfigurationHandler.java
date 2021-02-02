@@ -2,6 +2,7 @@ package nl.thedutchmc.harotorch;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -9,18 +10,20 @@ import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.EntityType;
 
 public class ConfigurationHandler {
 
 	private HaroTorch plugin;
 
 	public String torchBlock, activeLang;
-	public boolean enableTorchParticles;
+	public boolean enableTorchParticles, allowRemoveNotOwnedTorch, onlyBlockHostileMobs;
 	public int torchRange, torchHighlightRange, torchHighlightTime, torchAoeParticleHeight;
 	
 	public List<String> recipeShape;
+	public List<EntityType> mobExclusionList = new ArrayList<>();
 	public HashMap<Character, Material> recipeKeys = new HashMap<>();
-	
+		
 	public ConfigurationHandler(HaroTorch plugin) {
 		this.plugin = plugin;
 	}
@@ -57,11 +60,24 @@ public class ConfigurationHandler {
 		activeLang = this.getConfig().getString("activeLang");
 		
 		enableTorchParticles = this.getConfig().getBoolean("enableTorchParticles");
+		allowRemoveNotOwnedTorch = this.getConfig().getBoolean("allowRemoveNotOwnedTorch");
+		onlyBlockHostileMobs = this.getConfig().getBoolean("onlyBlockHostileMobs");
 		
 		torchRange = this.getConfig().getInt("torchRange");
 		torchHighlightRange = this.getConfig().getInt("torchHighlightRange");
 		torchHighlightTime = this.getConfig().getInt("torchHighlightTime");
 		torchAoeParticleHeight = this.getConfig().getInt("torchAoeParticleHeight");
+		
+		//Mob exclusion list parsing
+		List<String> mobExclusionList = this.getConfig().getStringList("mobsExcludeFromBlockList");
+		for(String mobStr : mobExclusionList ) {
+			try {
+				EntityType et = EntityType.valueOf(mobStr.toUpperCase());
+				this.mobExclusionList.add(et);
+			} catch(IllegalArgumentException e) {
+				plugin.logWarn("Provided mob type " + mobStr + " is not valid. Please check your configuration file!");
+			}
+		}
 		
 		//Recipe parsing
 		recipeShape = this.getConfig().getStringList("recipeShape");
