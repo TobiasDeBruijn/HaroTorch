@@ -1,5 +1,4 @@
 name: Release on tag
-
 on:
   push:
     tags:
@@ -9,8 +8,6 @@ jobs:
   create-release:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -27,8 +24,8 @@ jobs:
         export RELEASE_UPLOAD_URL="${{ steps.create_release.outputs.upload_url }}"
         echo "::set-output name=release_upload_url::${RELEASE_UPLOAD_URL}"
 
-    - outputs:
-        release_upload_url: ${{ steps.create_release.outputs.upload_url }}
+    outputs:
+      release_upload_url: ${{ steps.create_release.outputs.upload_url }}
 
   build-java-8:
     needs: create-release
