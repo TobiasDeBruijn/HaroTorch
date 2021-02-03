@@ -8,7 +8,9 @@ on:
 jobs:
   create-release:
     runs-on: ubuntu-latest
-    steps:     
+    steps:
+    - uses: actions/checkout@v2
+
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
