@@ -20,12 +20,13 @@ jobs:
         prerelease: false
     
     - name: Set output variables
+      id: export_vars
       run: |
         export RELEASE_UPLOAD_URL="${{ steps.create_release.outputs.upload_url }}"
         echo "::set-output name=release_upload_url::${RELEASE_UPLOAD_URL}"
 
     outputs:
-      release_upload_url: ${{ steps.create_release.outputs.upload_url }}
+      release_upload_url: ${{ steps.export_vars.outputs.release_upload_url }}
 
   build-java-8:
     needs: create-release
@@ -38,6 +39,11 @@ jobs:
       uses: actions/setup-java@v1
       with:
         java-version: 1.8
+
+    #test
+    - name: test
+      run: |
+        echo "${{ needs.create-release.outputs.release_upload_url }}"
 
     # create directory for buildtools
     - name: Create directory for BuildTools
