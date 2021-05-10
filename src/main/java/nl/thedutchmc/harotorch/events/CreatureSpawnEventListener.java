@@ -39,15 +39,29 @@ public class CreatureSpawnEventListener implements Listener {
 		//Check if we should only be blocking hostile mobs
 		if(HaroTorch.getConfigHandler().onlyBlockHostileMobs) {
 		
-			//Check if the spawned Entity is a Monster, Phantom or Slime and not a Wither
-			if(e instanceof Monster || et.equals(EntityType.PHANTOM) || et.equals(EntityType.SLIME) && !et.equals(EntityType.WITHER) && !et.equals(EntityType.ENDER_DRAGON)) {
-				if(torchInRange(event.getLocation())) event.setCancelled(true);
+			//Check if the spawned Entity is a Monster, Phantom, Slime, Ghast or Magma cube and not a Wither
+			// https://github.com/TheDutchMC/HaroTorch/issues/5
+			if(e instanceof Monster 
+					|| et.equals(EntityType.PHANTOM) 
+					|| et.equals(EntityType.SLIME) 
+					|| et.equals(EntityType.GHAST)
+					|| et.equals(EntityType.MAGMA_CUBE)
+					&& !et.equals(EntityType.WITHER) 
+					&& !et.equals(EntityType.ENDER_DRAGON)) {
+				
+				if(torchInRange(event.getLocation())) {
+					event.setCancelled(true);
+				}
 			}
 		} else {
 			//Check if the spawned entity is an ender dragon or wither, we dont want to block those
-			if(et.equals(EntityType.ENDER_DRAGON) || et.equals(EntityType.WITHER)) return;
+			if(et.equals(EntityType.ENDER_DRAGON) || et.equals(EntityType.WITHER)) {
+				return;
+			}
 						
-			if(torchInRange(event.getLocation())) event.setCancelled(true);
+			if(torchInRange(event.getLocation())) {
+				event.setCancelled(true);
+			}
 		}
 	}
 	
