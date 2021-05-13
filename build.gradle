@@ -78,8 +78,6 @@ task releaseJar(type: ShadowJar) {
 }
 
 task ghActions(type: ShadowJar) {
-	finalizedBy 'htRelocate'
-
 	description 'GitHub Actions task. Not used for regular development'
 	version = ''
 	archiveClassifier = ''
