@@ -15,6 +15,7 @@ import nl.thedutchmc.harotorch.events.*;
 import nl.thedutchmc.harotorch.lang.LangHandler;
 import nl.thedutchmc.harotorch.torch.Recipe;
 import nl.thedutchmc.harotorch.torch.TorchHandler;
+import nl.thedutchmc.harotorch.update.UpdateChecker;
 
 public class HaroTorch extends JavaPlugin {
 	
@@ -25,7 +26,13 @@ public class HaroTorch extends JavaPlugin {
 	
 	@Override
 	public void onEnable() {
-		logInfo("You are using NMS version " + NMS_VERSION);
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				new UpdateChecker(HaroTorch.this).checkUpdate();
+
+			}
+		}, "HaroTorch UpdateChecker Thread").start();
 		
 		CONFIG = new ConfigurationHandler(this);
 		CONFIG.loadConfig();
@@ -33,7 +40,7 @@ public class HaroTorch extends JavaPlugin {
 		LangHandler langHandler = new LangHandler(this);
 		langHandler.load();
 		
-		logInfo(LangHandler.activeLang.getLangMessages().get("welcome"));
+		this.logInfo(LangHandler.activeLang.getLangMessages().get("welcome"));
 		
 		RANGE = Math.pow(CONFIG.torchRange, 2);
 		
@@ -52,6 +59,8 @@ public class HaroTorch extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new BlockFromToEventListener(), this);
 		Bukkit.getPluginManager().registerEvents(new BlockExplodeEventListener(), this);
 		Bukkit.getPluginManager().registerEvents(new EntityExplodeEventListener(), this);
+		Bukkit.getPluginManager().registerEvents(new BlockPistonExtendEventListener(), this);
+		Bukkit.getPluginManager().registerEvents(new BlockPistonRetractEventListener(), this);
 		
 		//Commands
 		this.getCommand("torch").setExecutor(new TorchCommandExecutor(this));
