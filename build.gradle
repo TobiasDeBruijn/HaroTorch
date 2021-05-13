@@ -53,9 +53,6 @@ task testJar(type: ShadowJar) {
 	relocate 'dev.array21', 'nl.thedutchmc.harotorch.libs.dev.array21'
 	relocate 'org.apache.commons.io', 'nl.thedutchmc.harotorch.libs.org.apache.commons.io'
 	relocate 'nl.thedutchmc.httplib', 'nl.thedutchmc.harotorch.libs.nl.thedutchmc.httplib'
-	relocate 'com.google', 'nl.thedutchmc.harotorch.libs.com.google'
-	relocate 'javax', 'nl.thedutchmc.harotorch.libs.javax'
-	relocate 'org.checkerframework', 'nl.thedutchmc.harotorch.libs.checkerframework'
 	
 	destinationDirectory = file("$rootDir/server/plugins")
 }
@@ -70,9 +67,6 @@ task releaseJar(type: ShadowJar) {
 	relocate 'dev.array21', 'nl.thedutchmc.harotorch.libs.dev.array21'
 	relocate 'org.apache.commons.io', 'nl.thedutchmc.harotorch.libs.org.apache.commons.io'
 	relocate 'nl.thedutchmc.httplib', 'nl.thedutchmc.harotorch.libs.nl.thedutchmc.httplib'
-	relocate 'com.google', 'nl.thedutchmc.harotorch.libs.com.google'
-	relocate 'javax', 'nl.thedutchmc.harotorch.libs.javax'
-	relocate 'org.checkerframework', 'nl.thedutchmc.harotorch.libs.checkerframework'
 	
 	destinationDirectory = file("$rootDir/releases")
 }
@@ -89,9 +83,6 @@ task ghActions(type: ShadowJar) {
 	relocate 'dev.array21', 'nl.thedutchmc.harotorch.libs.dev.array21'
 	relocate 'org.apache.commons.io', 'nl.thedutchmc.harotorch.libs.org.apache.commons.io'
 	relocate 'nl.thedutchmc.httplib', 'nl.thedutchmc.harotorch.libs.nl.thedutchmc.httplib'
-	relocate 'com.google', 'nl.thedutchmc.harotorch.libs.com.google'
-	relocate 'javax', 'nl.thedutchmc.harotorch.libs.javax'
-	relocate 'org.checkerframework', 'nl.thedutchmc.harotorch.libs.checkerframework'
 
 	destinationDirectory = file("$rootDir/actions")
 }
