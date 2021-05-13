@@ -63,3 +63,8 @@ onlyBlockHostileMobs: true
 #
 # It is important that the format matches what Minecraft itself uses!
 mobsExcludeFromBlockList:
+
+
+# How many torches are players allowed to place down
+# Set to -1 to disable
+torchPlaceLimit: -1

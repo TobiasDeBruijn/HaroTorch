@@ -17,6 +17,7 @@ import org.bukkit.persistence.PersistentDataType;
 
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.harotorch.HaroTorch;
+import nl.thedutchmc.harotorch.annotations.Nullable;
 import nl.thedutchmc.harotorch.lang.LangHandler;
 
 public class TorchHandler {
@@ -24,6 +25,7 @@ public class TorchHandler {
 	private static HaroTorch plugin;
 	
 	private static HashMap<Location, Torch> torches = new HashMap<>();
+	private static HashMap<UUID, Integer> playerTorchCounter = new HashMap<>();
 	private static StorageHandler STORAGE;
 	
 	public TorchHandler(HaroTorch plugin) {		
@@ -39,11 +41,15 @@ public class TorchHandler {
 	}
 	
 	public static void addTorch(Torch torch) {
+		playerTorchCounter.merge(torch.getTorchOwner(), 1, Integer::sum);
+		
 		torches.put(torch.getLocation(), torch);
 		STORAGE.write(torch);
 	}
 	
 	public static void removeTorch(Torch torch) {
+		playerTorchCounter.merge(torch.getTorchOwner(), -1, Integer::sum);
+		
 		torches.remove(torch.getLocation());	
 		STORAGE.remove(torch);
 	}
@@ -124,5 +130,10 @@ public class TorchHandler {
 		}
 		
 		return result;
+	}
+	
+	@Nullable
+	public static Integer getTorchCountForPlayer(UUID uuid) {
+		return playerTorchCounter.get(uuid);
 	}
 }

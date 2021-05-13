@@ -12,13 +12,22 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 
+import nl.thedutchmc.harotorch.annotations.Nullable;
+
 public class ConfigurationHandler {
 
 	private HaroTorch plugin;
 
 	public String torchBlock, activeLang;
-	public boolean enableTorchParticles, allowRemoveNotOwnedTorch, onlyBlockHostileMobs;
-	public int torchRange, torchHighlightRange, torchHighlightTime, torchAoeParticleHeight;
+	public Boolean enableTorchParticles, allowRemoveNotOwnedTorch, onlyBlockHostileMobs;
+	public Integer torchRange, torchHighlightRange, torchHighlightTime, torchAoeParticleHeight;
+	
+	/**
+	 * Indicates how many torches a player may place. If null or -1, it should be disabled.
+	 * @since 2.2.2
+	 */
+	@Nullable
+	public Integer torchPlaceLimit;
 	
 	public List<String> recipeShape;
 	public List<EntityType> mobExclusionList = new ArrayList<>();
@@ -67,6 +76,7 @@ public class ConfigurationHandler {
 		torchHighlightRange = this.getConfig().getInt("torchHighlightRange");
 		torchHighlightTime = this.getConfig().getInt("torchHighlightTime");
 		torchAoeParticleHeight = this.getConfig().getInt("torchAoeParticleHeight");
+		torchPlaceLimit = this.getConfig().getInt("torchPlaceLimit");
 		
 		//Mob exclusion list parsing
 		List<String> mobExclusionList = this.getConfig().getStringList("mobsExcludeFromBlockList");
