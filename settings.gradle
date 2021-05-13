@@ -8,5 +8,3 @@
  */
 
 rootProject.name = 'HaroTorch'
-include ':Spigot_1_16_R2'
-include ':Spigot_1_16_R3'

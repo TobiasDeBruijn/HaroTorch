@@ -40,12 +40,8 @@ dependencies {
 	//We depend on the old HaroTorch so we can convert Torches to the v2 format
 	implementation 'com.github.TheDutchMC:HaroTorch:v1-SNAPSHOT'
 	
-	//Apache Commons IO
 	compile group: 'commons-io', name: 'commons-io', version: '2.6'
-	
-	compile project('Spigot_1_16_R2')
-	compile project('Spigot_1_16_R3')
-	
+	compile 'dev.array21:BukkitReflectionLib:1.0'	
 }
 
 task testJar(type: ShadowJar) {
@@ -54,6 +50,9 @@ task testJar(type: ShadowJar) {
 
 	from sourceSets.main.output
 	configurations = [project.configurations.runtime]
+	
+	relocate 'dev.array21', 'nl.thedutchmc.harotorch.libs.dev.array21'
+	relocate 'org.apache.commons.io', 'nl.thedutchmc.harotorch.libs.org.apache.commons.io'
 	
 	destinationDirectory = file("$rootDir/server/plugins")
 }
@@ -64,6 +63,9 @@ task releaseJar(type: ShadowJar) {
 
 	from sourceSets.main.output
 	configurations = [project.configurations.runtime]
+	
+	relocate 'dev.array21', 'nl.thedutchmc.harotorch.libs.dev.array21'
+	relocate 'org.apache.commons.io', 'nl.thedutchmc.harotorch.libs.org.apache.commons.io'
 	
 	destinationDirectory = file("$rootDir/releases")
 }
@@ -76,6 +78,9 @@ task ghActions(type: ShadowJar) {
 
 	from sourceSets.main.output
 	configurations = [project.configurations.runtime]
+
+	relocate 'dev.array21', 'nl.thedutchmc.harotorch.libs.dev.array21'
+	relocate 'org.apache.commons.io', 'nl.thedutchmc.harotorch.libs.org.apache.commons.io'
 
 	destinationDirectory = file("$rootDir/actions")
 }

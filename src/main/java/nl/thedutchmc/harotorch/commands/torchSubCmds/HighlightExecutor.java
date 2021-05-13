@@ -1,5 +1,6 @@
 package nl.thedutchmc.harotorch.commands.torchSubCmds;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -7,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import dev.array21.bukkitreflectionlib.ReflectionUtil;
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.harotorch.HaroTorch;
 import nl.thedutchmc.harotorch.lang.LangHandler;
@@ -14,21 +16,59 @@ import nl.thedutchmc.harotorch.torch.TorchHandler;
 
 public class HighlightExecutor {
 	
+	private static Class<?> craftPlayerClass;
+	private static Class<?> craftWorldClass;
+	private static Class<?> worldClass;
+	private static Class<?> entityTypesClass;
+	private static Class<?> entityMagmaCubeClass;
+	private static Class<?> entitySlimeClass;
+	private static Class<?> entityClass;
+	private static Class<?> entityLivingClass;
+	private static Class<?> packetPlayOutEntityLivingClass;
+	private static Class<?> packetPlayOutEntityLivingInterfaceClass;
+	private static Class<?> packetPlayOutEntityMetadataClass;
+	private static Class<?> packetPlayOutEntityMetadataInterfaceClass;
+	private static Class<?> packetPlayOutEntityDestroyClass;
+	private static Class<?> packetPlayOutEntityDestroyInterfaceClass;
+	private static Class<?> dataWatcherClass;
+
+	private static Object entityMagmaCubeField;
+	
+	static {
+		try {
+			craftPlayerClass = ReflectionUtil.getBukkitClass("entity.CraftPlayer");
+			craftWorldClass = ReflectionUtil.getBukkitClass("CraftWorld");
+			worldClass = ReflectionUtil.getNmsClass("World");
+			
+			entityTypesClass = ReflectionUtil.getNmsClass("EntityTypes");
+			entityMagmaCubeField = ReflectionUtil.getObject(null, entityTypesClass, "MAGMA_CUBE");
+			entityMagmaCubeClass = ReflectionUtil.getNmsClass("EntityMagmaCube");
+			entitySlimeClass = ReflectionUtil.getNmsClass("EntitySlime");
+			entityClass = ReflectionUtil.getNmsClass("Entity");
+			entityLivingClass = ReflectionUtil.getNmsClass("EntityLiving");
+			
+			packetPlayOutEntityLivingClass = ReflectionUtil.getNmsClass("PacketPlayOutSpawnEntityLiving");
+			packetPlayOutEntityLivingInterfaceClass = packetPlayOutEntityLivingClass.getInterfaces()[0];
+
+			packetPlayOutEntityMetadataClass = ReflectionUtil.getNmsClass("PacketPlayOutEntityMetadata");			
+			packetPlayOutEntityMetadataInterfaceClass = packetPlayOutEntityMetadataClass.getInterfaces()[0];
+			
+			packetPlayOutEntityDestroyClass = ReflectionUtil.getNmsClass("PacketPlayOutEntityDestroy");
+			packetPlayOutEntityDestroyInterfaceClass = packetPlayOutEntityDestroyClass.getInterfaces()[0];
+			
+			dataWatcherClass = ReflectionUtil.getNmsClass("DataWatcher");
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	public static boolean highlight(CommandSender sender, String[] args, HaroTorch plugin) {
 		
 		List<Location> nearbyTorches = TorchHandler.getTorchLocationsNearPlayer((Player) sender, HaroTorch.getConfigHandler().torchHighlightRange);
 		Player p = (Player) sender;
 		
-		List<Integer> returnedIds;
-		
-		switch(HaroTorch.NMS_VERSION) {
-		case "v1_16_R2": returnedIds = Highlight_1_16_r2.spawnHighlight(p, nearbyTorches); break;
-		case "v1_16_R3": returnedIds = Highlight_1_16_r3.spawnHighlight(p, nearbyTorches); break;
-		default:
-			String msg = LangHandler.activeLang.getLangMessages().get("highlightVersionNotSupported").replaceAll("%NMS_VERSION%", HaroTorch.NMS_VERSION);
-			p.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + msg);
-			return true;
-		}
+		List<Integer> returnedIds = spawnHighlight(p,  nearbyTorches);
 		
 		String msg = LangHandler.activeLang.getLangMessages().get("startingHiglight").replaceAll("%SECONDS%", ChatColor.RED + String.valueOf(HaroTorch.getConfigHandler().torchHighlightTime) + ChatColor.GOLD);
 		p.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + msg);
@@ -37,19 +77,91 @@ public class HighlightExecutor {
 			
 			@Override
 			public void run() {
-
-				switch(HaroTorch.NMS_VERSION) {
-				case "v1_16_R2": Highlight_1_16_r2.killHighlighted(returnedIds, p); break;
-				case "v1_16_R3": Highlight_1_16_r3.killHighlighted(returnedIds, p); break;
-
-				}
-				
+				killHighlighted(returnedIds, p);
 				p.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + LangHandler.activeLang.getLangMessages().get("endingHighlight"));
-
 			}
 		}.runTaskLater(plugin, HaroTorch.getConfigHandler().torchHighlightTime * 20);
 		
 		
 		return true;
+	}
+	
+	public static List<Integer> spawnHighlight(Player player, List<Location> locations) {
+		
+		List<Integer> result = new ArrayList<>();
+		
+		try {
+			Object entityPlayerObject = ReflectionUtil.invokeMethod(craftPlayerClass, player, "getHandle");
+			Object playerConnectionObject = ReflectionUtil.getObject(entityPlayerObject, "playerConnection");
+			
+			for(Location loc : locations) {
+				Object nmsWorld = ReflectionUtil.invokeMethod(craftWorldClass, loc.getWorld(), "getHandle");
+				Object entityMagmaCube = ReflectionUtil.invokeConstructor(entityMagmaCubeClass, new Class<?>[] { entityTypesClass, worldClass }, new Object[] { entityMagmaCubeField, nmsWorld });
+				
+				ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "setInvisible", new Class<?>[] { boolean.class }, new Object[] { false });
+				entityLivingClass.getField("collides").set(entityMagmaCube, false);
+				
+				//Glowing
+				ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "setFlag", new Class<?>[] { int.class, boolean.class }, new Object[] { 6, true });
+				
+				//Invisibility
+				ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "setFlag", new Class<?>[] { int.class, boolean.class }, new Object[] { 5, true });
+				
+				//Size
+				ReflectionUtil.invokeMethod(entitySlimeClass, entityMagmaCube, "setSize", new Class<?>[] { int.class, boolean.class }, new Object[] { 2, true });
+				
+				ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "setLocation", 
+						new Class<?>[] { double.class, double.class, double.class, float.class, float.class}, 
+						new Object[] { loc.getBlockX() + 0.5D, loc.getBlockY(), loc.getBlockZ() + 0.5D, 0f, 0f});
+				
+				Object spawnEntityLivingPacket = ReflectionUtil.invokeConstructor(packetPlayOutEntityLivingClass, new Class<?>[] { entityLivingClass }, new Object[] { entityMagmaCube });
+				Object entityMetadataPacket = ReflectionUtil.invokeConstructor(packetPlayOutEntityMetadataClass, 
+						new Class<?>[] { int.class, dataWatcherClass,  boolean.class}, 
+						new Object[] { 
+								ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "getId"),
+								ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "getDataWatcher"),
+								false
+						});
+				
+				ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket", 
+						new Class<?>[] { packetPlayOutEntityLivingInterfaceClass }, 
+						new Object[] { spawnEntityLivingPacket });
+				
+				ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket",
+						new Class<?>[] { packetPlayOutEntityMetadataInterfaceClass },
+						new Object[] { entityMetadataPacket });
+				
+				result.add((Integer) ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "getId"));
+			}
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
+	
+	public static void killHighlighted(List<Integer> ids, Player player) {
+		try {
+			Object entityPlayerObject = ReflectionUtil.invokeMethod(craftPlayerClass, player, "getHandle");
+			Object playerConnectionObject = ReflectionUtil.getObject(entityPlayerObject, "playerConnection");
+			
+			Object destroyEntityPacket = ReflectionUtil.invokeConstructor(packetPlayOutEntityDestroyClass, new Class<?>[] { int[].class }, new Object[] { toIntArray(ids) });
+			ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket",
+					new Class<?>[] { packetPlayOutEntityDestroyInterfaceClass }, 
+					new Object[] { destroyEntityPacket });
+			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static int[] toIntArray(List<Integer> a) {
+		int[] b = new int[a.size()];
+		for(int i = 0; i < a.size(); i++) {
+			b[i] = a.get(i);
+		}
+		
+		return b;
 	}
 }

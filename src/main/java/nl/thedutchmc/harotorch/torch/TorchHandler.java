@@ -37,6 +37,7 @@ public class TorchHandler {
 		
 		for(Torch t : STORAGE.read()) {
 			torches.put(t.getLocation(), t);
+			playerTorchCounter.merge(t.getTorchOwner(), 1, Integer::sum);
 		}
 	}
 	
