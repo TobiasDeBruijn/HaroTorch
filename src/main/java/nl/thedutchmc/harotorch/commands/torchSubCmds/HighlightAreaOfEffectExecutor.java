@@ -7,6 +7,7 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
+import org.bukkit.World.Environment;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -43,7 +44,12 @@ public class HighlightAreaOfEffectExecutor {
 				final int x = (int) (cx + (radius * Math.cos(rad)));
 				final int z = (int) (cz + (radius * Math.sin(rad)));
 				
-				final int y = w.getHighestBlockAt(x, z).getY() + 1;
+				int y;
+				if(w.getEnvironment() == Environment.NETHER) {
+					y = l.getBlockY();
+				} else {
+					y = w.getHighestBlockAt(x, z).getY() + 1;
+				}
 				
 				blocksOnTorchRadius.add(new Location(w, x, y, z));
 			}
@@ -70,6 +76,12 @@ public class HighlightAreaOfEffectExecutor {
 						
 						for(int i = 0; i < HaroTorch.getConfigHandler().torchAoeParticleHeight; i++) {
 							torchLoc.getWorld().spawnParticle(Particle.REDSTONE, l.getX() + 0.5D, l.getY() + 0.5D + i, l.getZ() + 0.5D, 5, 0D, 0D, 0D, 0.005, new Particle.DustOptions(torchParticle.getTorchParticleColor(), 1));
+						}
+						
+						if(torchLoc.getWorld().getEnvironment() == Environment.NETHER) {
+							for(int i = 1; i < HaroTorch.getConfigHandler().torchAoeParticleHeight -1; i++) {
+								torchLoc.getWorld().spawnParticle(Particle.REDSTONE, l.getX() + 0.5D, l.getY() + 0.5D - i, l.getZ() + 0.5D, 5, 0D, 0D, 0D, 0.005, new Particle.DustOptions(torchParticle.getTorchParticleColor(), 1));
+							}
 						}
 					}
 				}	
