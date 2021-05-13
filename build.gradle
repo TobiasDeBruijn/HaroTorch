@@ -40,8 +40,11 @@ dependencies {
 	//We depend on the old HaroTorch so we can convert Torches to the v2 format
 	implementation 'com.github.TheDutchMC:HaroTorch:v1-SNAPSHOT'
 	
-	compile group: 'commons-io', name: 'commons-io', version: '2.6'
-	compile 'dev.array21:BukkitReflectionLib:1.0'	
+	compile 'commons-io:commons-io:2.6'
+	compile 'com.github.TheDutchMC:BukkitReflectionUtil:1.1'
+	
+	//Only used during development
+	//compile 'dev.array21:BukkitReflectionLib:1.0'	
 }
 
 task testJar(type: ShadowJar) {
