@@ -9,12 +9,14 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
+import org.bukkit.Particle.DustOptions;
 import org.bukkit.World.Environment;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
+import dev.array21.bukkitreflectionlib.ReflectionUtil;
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.harotorch.HaroTorch;
 import nl.thedutchmc.harotorch.lang.LangHandler;
@@ -23,6 +25,25 @@ import nl.thedutchmc.harotorch.torch.TorchHandler;
 public class HighlightAreaOfEffectExecutor {
 
 	private static HashMap<UUID, Long> lastCommandTimestamps = new HashMap<>();
+	
+	private static Class<?> packetPlayOutWorldParticleClass;
+	private static Class<?> packetPlayOutWorldParticleInterfaceClass;
+	private static Class<?> craftPlayerClass;
+	private static Class<?> craftParticleClass;
+	private static Class<?> particleParamClass;
+	
+	static {
+		try {
+			packetPlayOutWorldParticleClass = ReflectionUtil.getNmsClass("PacketPlayOutWorldParticles");
+			packetPlayOutWorldParticleInterfaceClass = packetPlayOutWorldParticleClass.getInterfaces()[0];
+			
+			craftPlayerClass = ReflectionUtil.getBukkitClass("entity.CraftPlayer");
+			craftParticleClass = ReflectionUtil.getBukkitClass("CraftParticle");
+			particleParamClass = ReflectionUtil.getNmsClass("ParticleParam");
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public static boolean aoe(CommandSender sender, HaroTorch plugin) {
 		
@@ -87,20 +108,23 @@ public class HighlightAreaOfEffectExecutor {
 				
 					final Location torchLoc = torchParticle.getTorch();
 					
-					torchLoc.getWorld().spawnParticle(Particle.REDSTONE, torchLoc.getX() + 0.5D, torchLoc.getY() + 1.5D, torchLoc.getZ() + 0.5D, 25, 0D, 0D, 0D, 0.005, new Particle.DustOptions(torchParticle.getTorchParticleColor(), 1));
+					List<Object> particlePackets = new ArrayList<>();
+					particlePackets.add(getParticlePacket(torchLoc.getX() + 0.5d, torchLoc.getY() + 1.5d, torchLoc.getZ() + 0.5d, 0f, 0f, 0f, 0.005f, 10, false, new Particle.DustOptions(torchParticle.getTorchParticleColor(), 1)));
 					
 					for(Location l : torchParticle.getCircleLocations()) {	
 						
 						for(int i = 0; i < HaroTorch.getConfigHandler().torchAoeParticleHeight; i++) {
-							torchLoc.getWorld().spawnParticle(Particle.REDSTONE, l.getX() + 0.5D, l.getY() + 0.5D + i, l.getZ() + 0.5D, 5, 0D, 0D, 0D, 0.005, new Particle.DustOptions(torchParticle.getTorchParticleColor(), 1));
+							particlePackets.add(getParticlePacket(l.getX() + 0.5d, l.getY() + 0.5d + i, l.getZ() + 0.5d, 0f, 0f, 0f, 0.005f, 5, false, new Particle.DustOptions(torchParticle.getTorchParticleColor(), 1)));
 						}
 						
 						if(torchLoc.getWorld().getEnvironment() == Environment.NETHER) {
 							for(int i = 1; i < HaroTorch.getConfigHandler().torchAoeParticleHeight -1; i++) {
-								torchLoc.getWorld().spawnParticle(Particle.REDSTONE, l.getX() + 0.5D, l.getY() + 0.5D - i, l.getZ() + 0.5D, 5, 0D, 0D, 0D, 0.005, new Particle.DustOptions(torchParticle.getTorchParticleColor(), 1));
+								particlePackets.add(getParticlePacket(l.getX() + 0.5d, l.getY() + 0.5d - i, l.getZ() + 0.5d, 0f, 0f, 0f, 0.005f, 5, false, new Particle.DustOptions(torchParticle.getTorchParticleColor(), 1)));
 							}
 						}
 					}
+					
+					spawnParticles(particlePackets, (Player) sender);
 				}	
 			}
 			
@@ -116,6 +140,45 @@ public class HighlightAreaOfEffectExecutor {
 		}.runTaskLater(plugin, 30L * 20L);
 		
 		return true;
+	}
+	
+	private static Object getParticlePacket(double pX, double pY, double pZ, float oX, float oY, float oZ, float extra, int count, boolean force, DustOptions dustOptions) {
+		try {
+			Object nmsParticleData = particleDataToNms(Particle.REDSTONE, dustOptions);			
+			Object particlePacket = ReflectionUtil.invokeConstructor(packetPlayOutWorldParticleClass, 
+					new Class<?>[] { particleParamClass, boolean.class, double.class, double.class, double.class, float.class, float.class, float.class, float.class, int.class}, 
+					new Object[] { nmsParticleData, force, pX, pY, pZ, oX, oY, oZ, extra, count });
+			
+			return particlePacket;
+		} catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	private static void spawnParticles(List<Object> particlePackets, Player player) {
+		try {
+			Object entityPlayerObject = ReflectionUtil.invokeMethod(craftPlayerClass, player, "getHandle");
+			Object playerConnectionObject = ReflectionUtil.getObject(entityPlayerObject, "playerConnection");
+		
+			for(Object packet : particlePackets) {
+				ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket", 
+						new Class<?>[] { packetPlayOutWorldParticleInterfaceClass }, 
+						new Object[] { packet });
+			}
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static Object particleDataToNms(Particle a, DustOptions b) {
+		try {
+			Object dataAsNMS = ReflectionUtil.invokeMethod(craftParticleClass, null, "toNMS", new Class<?>[] { Particle.class, Object.class}, new Object[] {a, b});
+			return dataAsNMS;
+		} catch(Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 	
 	private static class TorchParticleObject {
