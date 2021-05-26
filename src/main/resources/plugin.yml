@@ -3,6 +3,7 @@ name: HaroTorch-V2
 author: TheDutchMC76
 api-version: 1.16
 description: HaroTorch is a plugin which adds the HaroTorch, a block which blocks mob spawns in a configurable radius.
+softdepend: [Multiverse-Core]
 version: @version@
 commands:
  torch:

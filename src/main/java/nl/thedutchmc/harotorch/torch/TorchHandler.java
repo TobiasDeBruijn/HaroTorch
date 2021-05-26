@@ -9,6 +9,7 @@ import java.util.UUID;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.World;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -123,7 +124,15 @@ public class TorchHandler {
 		for(Map.Entry<Location, Torch> entry : torches.entrySet()) {
 			Location l = entry.getKey();
 			
-			if(!l.getWorld().getName().equals(player.getLocation().getWorld().getName())) continue;
+			World playerWorld = player.getLocation().getWorld();
+			//Issue #9
+			if(playerWorld == null || l.getWorld() == null) {
+				continue;
+			}
+			
+			if(!l.getWorld().getName().equals(playerWorld.getName())) {
+				continue;
+			}
 			
 			if(l.distanceSquared(player.getLocation()) < Math.pow(radius, 2)) {
 				result.add(l);

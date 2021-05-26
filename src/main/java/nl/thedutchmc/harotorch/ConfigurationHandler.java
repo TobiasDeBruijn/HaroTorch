@@ -20,7 +20,7 @@ public class ConfigurationHandler {
 
 	public String torchBlock, activeLang;
 	public Boolean enableTorchParticles, allowRemoveNotOwnedTorch, onlyBlockHostileMobs;
-	public Integer torchRange, torchHighlightRange, torchHighlightTime, torchAoeParticleHeight;
+	public Integer torchRange, torchHighlightRange, torchHighlightTime, torchAoeParticleHeight, commandCooldown;
 	
 	/**
 	 * Indicates how many torches a player may place. If null or -1, it should be disabled.
@@ -77,6 +77,7 @@ public class ConfigurationHandler {
 		torchHighlightTime = this.getConfig().getInt("torchHighlightTime");
 		torchAoeParticleHeight = this.getConfig().getInt("torchAoeParticleHeight");
 		torchPlaceLimit = this.getConfig().getInt("torchPlaceLimit");
+		commandCooldown = this.getConfig().getInt("commandCooldown");
 		
 		//Mob exclusion list parsing
 		List<String> mobExclusionList = this.getConfig().getStringList("mobsExcludeFromBlockList");

@@ -1,7 +1,9 @@
 package nl.thedutchmc.harotorch.commands.torchSubCmds;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -15,6 +17,8 @@ import nl.thedutchmc.harotorch.lang.LangHandler;
 import nl.thedutchmc.harotorch.torch.TorchHandler;
 
 public class HighlightExecutor {
+	
+	private static HashMap<UUID, Long> lastCommandTimestamps = new HashMap<>();
 	
 	private static Class<?> craftPlayerClass;
 	private static Class<?> craftWorldClass;
@@ -64,6 +68,19 @@ public class HighlightExecutor {
 	}
 
 	public static boolean highlight(CommandSender sender, String[] args, HaroTorch plugin) {
+		
+		Integer commandCooldown = HaroTorch.getConfigHandler().commandCooldown;
+		if(commandCooldown != null && commandCooldown > 0) {
+			Long lastCommandUseTimestamp = lastCommandTimestamps.get(((Player) sender).getUniqueId());
+			if(lastCommandUseTimestamp != null) {
+				if(lastCommandUseTimestamp >= System.currentTimeMillis()) {
+					sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + LangHandler.activeLang.getLangMessages().get("commandCooldown"));
+					return true;
+				}
+			}
+			
+			lastCommandTimestamps.put(((Player) sender).getUniqueId(), System.currentTimeMillis() + (commandCooldown * 1000));
+		}
 		
 		List<Location> nearbyTorches = TorchHandler.getTorchLocationsNearPlayer((Player) sender, HaroTorch.getConfigHandler().torchHighlightRange);
 		Player p = (Player) sender;
