@@ -22,10 +22,17 @@ public class BlockExplodeEventListener implements Listener {
 				continue;
 			}
 			
-			
-			//Check if the block above the block being exploded is a torch
 			Location loc_y_plus_1 = new Location(loc.getWorld(), loc.getX(), loc.getY() + 1, loc.getZ());
-			if(TorchHandler.isTorch(loc_y_plus_1)) {
+			Location loc_x_plus_1 = new Location(loc.getWorld(), loc.getX() +1, loc.getY(), loc.getZ());
+			Location loc_x_minus_1 = new Location(loc.getWorld(), loc.getX() -1, loc.getY(), loc.getZ());
+			Location loc_z_plus_1 = new Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ() +1);
+			Location loc_z_minus_1 = new Location(loc.getWorld(), loc.getX(), loc.getY(), loc.getZ() -1);			
+			if(TorchHandler.isTorch(loc_y_plus_1)
+					|| TorchHandler.isTorch(loc_x_plus_1)
+					|| TorchHandler.isTorch(loc_x_minus_1)
+					|| TorchHandler.isTorch(loc_z_plus_1)
+					|| TorchHandler.isTorch(loc_z_minus_1)) {
+				
 				event.setCancelled(true);
 			}
 		}
