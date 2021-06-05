@@ -8,6 +8,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import dev.array21.pluginstatlib.PluginStat;
+import dev.array21.pluginstatlib.PluginStat.PluginStatBuilder;
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.harotorch.commands.TorchCommandExecutor;
 import nl.thedutchmc.harotorch.commands.TorchCommandTabCompleter;
@@ -36,6 +38,18 @@ public class HaroTorch extends JavaPlugin {
 		
 		CONFIG = new ConfigurationHandler(this);
 		CONFIG.loadConfig();
+		String jVersion = System.getProperty("java.version");
+		System.out.println(jVersion);
+		if(!CONFIG.disableStat) {
+			PluginStat stat = PluginStatBuilder.createDefault()
+					.setLogErrFn(this::logWarn)
+					.setSetUuidFn(CONFIG::setUuid)
+					.setUuid(CONFIG.statUuid)
+					.build();
+			
+			stat.start();
+		}
+
 		
 		LangHandler langHandler = new LangHandler(this);
 		langHandler.load();
@@ -65,7 +79,6 @@ public class HaroTorch extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new BlockPhysicsEventListener(), this);
 		Bukkit.getPluginManager().registerEvents(new BlockBurnEventListener(), this);
 
-		
 		//Commands
 		this.getCommand("torch").setExecutor(new TorchCommandExecutor(this));
 		this.getCommand("torch").setTabCompleter(new TorchCommandTabCompleter());
@@ -98,12 +111,12 @@ public class HaroTorch extends JavaPlugin {
 		logInfo(LangHandler.activeLang.getLangMessages().get("goodbye"));
 	}
 	
-	public void logInfo(String log) {
-		this.getLogger().info(log);
+	public void logInfo(Object log) {
+		this.getLogger().info(log.toString());
 	}
 	
-	public void logWarn(String log) {
-		this.getLogger().warning(log);
+	public void logWarn(Object log) {
+		this.getLogger().warning(log.toString());
 	}
 	
 	public static  ConfigurationHandler getConfigHandler() {

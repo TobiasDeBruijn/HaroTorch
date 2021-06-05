@@ -18,8 +18,8 @@ public class ConfigurationHandler {
 
 	private HaroTorch plugin;
 
-	public String torchBlock, activeLang;
-	public Boolean enableTorchParticles, allowRemoveNotOwnedTorch, onlyBlockHostileMobs;
+	public String torchBlock, activeLang, statUuid;
+	public Boolean enableTorchParticles, allowRemoveNotOwnedTorch, onlyBlockHostileMobs, disableStat;
 	public Integer torchRange, torchHighlightRange, torchHighlightTime, torchAoeParticleHeight, commandCooldown;
 	
 	/**
@@ -68,9 +68,13 @@ public class ConfigurationHandler {
 		torchBlock = this.getConfig().getString("torchBlock");
 		activeLang = this.getConfig().getString("activeLang");
 		
+		String statUuid = this.getConfig().getString("statUuid");
+		this.statUuid = statUuid != null ? statUuid : "";
+		
 		enableTorchParticles = this.getConfig().getBoolean("enableTorchParticles");
 		allowRemoveNotOwnedTorch = this.getConfig().getBoolean("allowRemoveNotOwnedTorch");
 		onlyBlockHostileMobs = this.getConfig().getBoolean("onlyBlockHostileMobs");
+		disableStat = this.getConfig().getBoolean("disableStat");
 		
 		torchRange = this.getConfig().getInt("torchRange");
 		torchHighlightRange = this.getConfig().getInt("torchHighlightRange");
@@ -107,6 +111,17 @@ public class ConfigurationHandler {
 			}
 			
 			recipeKeys.put(key, m);
+		}
+	}
+	
+	public void setUuid(String uuid) {
+		this.statUuid = uuid;
+		
+		this.getConfig().set("statUuid", uuid);
+		try {
+			this.config.save(file);
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 }
