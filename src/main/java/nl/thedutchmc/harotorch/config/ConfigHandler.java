@@ -73,7 +73,7 @@ public class ConfigHandler {
 	 */
 	public void setStatUuid(String uuid) {
 		this.manifest.statUuid = uuid;
-		String yaml = this.yaml.dump(this.manifest);
+		String yaml = this.yaml.dumpAsMap(this.manifest);
 		
 		try {
 			File configFile = new File(this.plugin.getDataFolder(), "config.yml");

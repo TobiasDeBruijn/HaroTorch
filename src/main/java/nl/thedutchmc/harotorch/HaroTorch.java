@@ -47,11 +47,11 @@ public class HaroTorch extends JavaPlugin {
 		
 		ConfigManifest manifest = this.configHandler.getManifest();
 		
-		if(!manifest.disableStat) {
+		if(manifest.isStatEnabled()) {
 			PluginStat stat = PluginStatBuilder.createDefault()
 					.setLogErrFn(HaroTorch::logWarn)
 					.setSetUuidFn(this.configHandler::setStatUuid)
-					.setUuid(manifest.statUuid)
+					.setUuid(manifest.statUuid != null ? manifest.statUuid : "")
 					.build();
 			
 			stat.start();

@@ -55,7 +55,7 @@ public class ConfigManifest {
 	 * True if statistics should not be collected.
 	 */
 	@Nullable
-	public boolean disableStat;
+	public Boolean disableStat;
 	
 	/**
 	 * True if the Torch shape should be a circle.
@@ -117,6 +117,18 @@ public class ConfigManifest {
 	 */
 	@Nullable
 	private String[] mobsExcludeFromBlockList;
+	
+	/**
+	 * Returns if Statistics are enabled
+	 * @return True if statistics are enabled
+	 */
+	public boolean isStatEnabled() {
+		if(this.disableStat != null && !this.disableStat ) {
+			return false;
+		}
+		
+		return true;
+	}
 	
 	/**
 	 * Get in what Shape the torch radius should be calculated
