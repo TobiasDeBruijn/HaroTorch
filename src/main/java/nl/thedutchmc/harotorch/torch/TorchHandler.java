@@ -19,6 +19,7 @@ import org.bukkit.persistence.PersistentDataType;
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.harotorch.HaroTorch;
 import nl.thedutchmc.harotorch.annotations.Nullable;
+import nl.thedutchmc.harotorch.config.ConfigManifest.TorchRangeShape;
 import nl.thedutchmc.harotorch.lang.LangHandler;
 
 public class TorchHandler {
@@ -95,11 +96,11 @@ public class TorchHandler {
 
 	public static ItemStack getTorch(int count) {
 		
-		ItemStack stack = new ItemStack(Material.matchMaterial(HaroTorch.getConfigHandler().torchBlock));
+		ItemStack stack = new ItemStack(Material.matchMaterial(TorchHandler.plugin.getConfigManifest().torchBlock));
 		ItemMeta meta = stack.getItemMeta();
 
 		List<String> lore = new ArrayList<>();
-		lore.add(LangHandler.activeLang.getLangMessages().get("torchLore").replaceAll("%TORCH_RADIUS%", String.valueOf(HaroTorch.getConfigHandler().torchRange)));
+		lore.add(LangHandler.activeLang.getLangMessages().get("torchLore").replaceAll("%TORCH_RADIUS%", String.valueOf(TorchHandler.plugin.getConfigManifest().torchRange)));
 		
 		meta.setLore(lore);
 		meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', LangHandler.activeLang.getLangMessages().get("torchTitle")));
@@ -134,8 +135,18 @@ public class TorchHandler {
 				continue;
 			}
 			
-			if(l.distanceSquared(player.getLocation()) < Math.pow(radius, 2)) {
-				result.add(l);
+			if(TorchHandler.plugin.getConfigManifest().getTorchRangeShape() == TorchRangeShape.CIRCLE) {
+				if(l.distanceSquared(player.getLocation()) < Math.pow(radius, 2)) {
+					result.add(l);
+				}
+			} else {
+				Location lPlayer = player.getLocation();
+				double distanceX = Math.abs(l.getX() - lPlayer.getX());
+				double distanceZ = Math.abs(l.getZ() - lPlayer.getZ());
+				
+				if(distanceX < radius && distanceZ < radius) {
+					result.add(l);
+				}
 			}
 		}
 		

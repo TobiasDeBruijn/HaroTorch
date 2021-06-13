@@ -19,12 +19,14 @@ import org.bukkit.scheduler.BukkitTask;
 import dev.array21.bukkitreflectionlib.ReflectionUtil;
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.harotorch.HaroTorch;
+import nl.thedutchmc.harotorch.commands.SubCommand;
+import nl.thedutchmc.harotorch.config.ConfigManifest.TorchRangeShape;
 import nl.thedutchmc.harotorch.lang.LangHandler;
 import nl.thedutchmc.harotorch.torch.TorchHandler;
 
 // ReflectionUtil.getNmsClass(String) is deprecated, kept for backwards compatibility with MC:1.16 and older.
 @SuppressWarnings("deprecation")
-public class HighlightAreaOfEffectExecutor {
+public class HighlightAreaOfEffectExecutor implements SubCommand {
 
 	private static HashMap<UUID, Long> lastCommandTimestamps = new HashMap<>();
 	
@@ -57,9 +59,9 @@ public class HighlightAreaOfEffectExecutor {
 		}
 	}
 	
-	public static boolean aoe(CommandSender sender, HaroTorch plugin) {
+	public boolean run(HaroTorch plugin, CommandSender sender, String[] args) {
 		
-		Integer commandCooldown = HaroTorch.getConfigHandler().commandCooldown;
+		Integer commandCooldown = plugin.getConfigManifest().commandCooldown;
 		if(commandCooldown != null && commandCooldown > 0) {
 			Long lastCommandUseTimestamp = lastCommandTimestamps.get(((Player) sender).getUniqueId());
 			if(lastCommandUseTimestamp != null) {
@@ -72,17 +74,169 @@ public class HighlightAreaOfEffectExecutor {
 			lastCommandTimestamps.put(((Player) sender).getUniqueId(), System.currentTimeMillis() + (commandCooldown * 1000));
 		}
 		
-		String msg = LangHandler.activeLang.getLangMessages().get("startingAoe").replaceAll("%SECONDS%", ChatColor.RED + String.valueOf(HaroTorch.getConfigHandler().torchHighlightTime) + ChatColor.GOLD);
+		String msg = LangHandler.activeLang.getLangMessages().get("startingAoe").replaceAll("%SECONDS%", ChatColor.RED + String.valueOf(plugin.getConfigManifest().torchHighlightTime) + ChatColor.GOLD);
 		sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + msg);
 		
-		List<Location> nearbyTorches = TorchHandler.getTorchLocationsNearPlayer((Player) sender, HaroTorch.getConfigHandler().torchHighlightRange);
-		final List<TorchParticleObject> torchParticles = new ArrayList<>();
+		List<Location> nearbyTorches = TorchHandler.getTorchLocationsNearPlayer((Player) sender, plugin.getConfigManifest().torchHighlightRange);
 		
-		for(Location l : nearbyTorches) {
+		List<TorchParticleObject> torchParticles;
+		if(plugin.getConfigManifest().getTorchRangeShape() == TorchRangeShape.CIRCLE) {
+			torchParticles = getParticlesCircular(nearbyTorches, plugin);
+		} else {
+			torchParticles = getParticlesSquare(nearbyTorches, plugin);
+		}
+		
+		System.out.println("ParticlesSize: " + torchParticles.size());
+		
+		final BukkitTask particle = new BukkitRunnable() {
 			
+			@Override
+			public void run() {
+				for(TorchParticleObject torchParticle : torchParticles) {
+				
+					final Location torchLoc = torchParticle.getTorch();
+					
+					List<Object> particlePackets = new ArrayList<>();
+					particlePackets.add(getParticlePacket(torchLoc.getX() + 0.5d, torchLoc.getY() + 1.5d, torchLoc.getZ() + 0.5d, 0f, 0f, 0f, 0.005f, 10, false, new Particle.DustOptions(torchParticle.getTorchParticleColor(), 1)));
+					
+					for(Location l : torchParticle.getCircleLocations()) {	
+						
+						for(int i = 0; i < plugin.getConfigManifest().torchAoeParticleHeight; i++) {
+							particlePackets.add(getParticlePacket(l.getX() + 0.5d, l.getY() + 0.5d + i, l.getZ() + 0.5d, 0f, 0f, 0f, 0.005f, 5, false, new Particle.DustOptions(torchParticle.getTorchParticleColor(), 1)));
+						}
+						
+						if(torchLoc.getWorld().getEnvironment() == Environment.NETHER) {
+							for(int i = 1; i < plugin.getConfigManifest().torchAoeParticleHeight -1; i++) {
+								particlePackets.add(getParticlePacket(l.getX() + 0.5d, l.getY() + 0.5d - i, l.getZ() + 0.5d, 0f, 0f, 0f, 0.005f, 5, false, new Particle.DustOptions(torchParticle.getTorchParticleColor(), 1)));
+							}
+						}
+					}
+					
+					spawnParticles(particlePackets, (Player) sender);
+				}	
+			}
+			
+		}.runTaskTimer(plugin, 60L, 10L);
+		
+		new BukkitRunnable() {
+			
+			@Override
+			public void run() {
+				particle.cancel();
+				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + LangHandler.activeLang.getLangMessages().get("endingAoe"));
+			}
+		}.runTaskLater(plugin, 30L * 20L);
+		
+		return true;
+	}
+	
+	/**
+	 * Get all TorchParticleObject's in a square range
+	 * @param nearbyTorches Locations of the Torches
+	 * @param plugin HaroTorch instance
+	 * @return
+	 */
+	public List<TorchParticleObject> getParticlesSquare(List<Location> nearbyTorches, HaroTorch plugin) {
+		List<TorchParticleObject> result = new ArrayList<>();
+		final int range = plugin.getConfigManifest().torchRange;
+
+		nearbyTorches.parallelStream().forEach((lTorch) -> {
+			List<Location> locs = new ArrayList<>();
+
+			Location xNeg = lTorch.clone();
+			xNeg.setX(lTorch.getX() - range);
+			locs.add(xNeg);
+			
+			Location xPos = lTorch.clone();
+			xPos.setX(xPos.getX() + range);
+			locs.add(xPos);
+			
+			Location zNeg = lTorch.clone();
+			zNeg.setZ(lTorch.getZ() - range);
+			locs.add(zNeg);
+			
+			Location zPos = lTorch.clone();
+			zPos.setZ(lTorch.getZ() + range);
+			locs.add(zPos);
+			
+			// xNeg + 
+			for(int i = 1; i <= range; i++) {
+				Location l = xNeg.clone();
+				l.setZ(xNeg.getZ() + i);
+				locs.add(l);
+			}
+			
+			// xNeg -
+			for(int i = -1; i >= -range; i--) {
+				Location l = xNeg.clone();
+				l.setZ(xNeg.getZ() + i);
+				locs.add(l);
+			}
+			
+			// xPos +
+			for(int i = 1; i <= range; i++) {
+				Location l = xPos.clone();
+				l.setZ(xPos.getZ() + i);
+				locs.add(l);
+			}
+			
+			// xPos -
+			for(int i = -1; i >= -range; i--) {
+				Location l = xPos.clone();
+				l.setZ(xPos.getZ() + i);
+				locs.add(l);
+			}
+			
+			// zNeg +
+			for(int i = 1; i <= range; i++) {
+				Location l = zNeg.clone();
+				l.setX(zNeg.getX() + i);
+				locs.add(l);
+			}
+			
+			// zNeg -
+			for(int i = -1; i >= -range; i--) {
+				Location l = zNeg.clone();
+				l.setX(zNeg.getX() + i);
+				locs.add(l);
+			}
+			
+			// zPos +
+			for(int i = 1; i <= range; i++) {
+				Location l = zPos.clone();
+				l.setX(zPos.getX() + i);
+				locs.add(l);
+			}
+			
+			// zPos -
+			for(int i = -1; i >= -range; i--) {
+				Location l = zPos.clone();
+				l.setX(zPos.getX() + i);
+				locs.add(l);
+			}
+			
+			final int r = (int) (Math.random() * 256D);
+			final int g = (int) (Math.random() * 256D);
+			final int b = (int) (Math.random() * 256D);
+			result.add(new TorchParticleObject(r, g, b, locs, lTorch));
+		});
+		
+		return result;
+	}
+	
+	/**
+	 * Get all TorchParticleObjects in a circular range
+	 * @param nearbyTorches Locations of the Torches
+	 * @param plugin HaroTorch instance
+	 * @return
+	 */
+	public List<TorchParticleObject> getParticlesCircular(List<Location> nearbyTorches, HaroTorch plugin) {
+		List<TorchParticleObject> result = new ArrayList<>();
+
+		nearbyTorches.parallelStream().forEach((l) -> {
 			final List<Location> blocksOnTorchRadius = new ArrayList<>();
-			
-			final int radius = HaroTorch.getConfigHandler().torchRange;
+
+			final int radius = plugin.getConfigManifest().torchRange;
 			final int cx = l.getBlockX();
 			final int cz = l.getBlockZ();
 			final World w = l.getWorld();
@@ -108,50 +262,10 @@ public class HighlightAreaOfEffectExecutor {
 			final int g = (int) (Math.random() * 256D);
 			final int b = (int) (Math.random() * 256D);
 			
-			torchParticles.add(new TorchParticleObject(r, g, b, blocksOnTorchRadius, l));
-		}
+			result.add(new TorchParticleObject(r, g, b, blocksOnTorchRadius, l));
+		});
 		
-		final BukkitTask particle = new BukkitRunnable() {
-			
-			@Override
-			public void run() {
-				
-				for(TorchParticleObject torchParticle : torchParticles) {
-				
-					final Location torchLoc = torchParticle.getTorch();
-					
-					List<Object> particlePackets = new ArrayList<>();
-					particlePackets.add(getParticlePacket(torchLoc.getX() + 0.5d, torchLoc.getY() + 1.5d, torchLoc.getZ() + 0.5d, 0f, 0f, 0f, 0.005f, 10, false, new Particle.DustOptions(torchParticle.getTorchParticleColor(), 1)));
-					
-					for(Location l : torchParticle.getCircleLocations()) {	
-						
-						for(int i = 0; i < HaroTorch.getConfigHandler().torchAoeParticleHeight; i++) {
-							particlePackets.add(getParticlePacket(l.getX() + 0.5d, l.getY() + 0.5d + i, l.getZ() + 0.5d, 0f, 0f, 0f, 0.005f, 5, false, new Particle.DustOptions(torchParticle.getTorchParticleColor(), 1)));
-						}
-						
-						if(torchLoc.getWorld().getEnvironment() == Environment.NETHER) {
-							for(int i = 1; i < HaroTorch.getConfigHandler().torchAoeParticleHeight -1; i++) {
-								particlePackets.add(getParticlePacket(l.getX() + 0.5d, l.getY() + 0.5d - i, l.getZ() + 0.5d, 0f, 0f, 0f, 0.005f, 5, false, new Particle.DustOptions(torchParticle.getTorchParticleColor(), 1)));
-							}
-						}
-					}
-					
-					spawnParticles(particlePackets, (Player) sender);
-				}	
-			}
-			
-		}.runTaskTimer(plugin, 60L, 10L);
-		
-		new BukkitRunnable() {
-			
-			@Override
-			public void run() {
-				particle.cancel();
-				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + LangHandler.activeLang.getLangMessages().get("endingAoe"));
-			}
-		}.runTaskLater(plugin, 30L * 20L);
-		
-		return true;
+		return result;
 	}
 	
 	/**
@@ -168,7 +282,7 @@ public class HighlightAreaOfEffectExecutor {
 	 * @param dustOptions DustOptions for the particle
 	 * @return
 	 */
-	private static Object getParticlePacket(double pX, double pY, double pZ, float oX, float oY, float oZ, float extra, int count, boolean force, DustOptions dustOptions) {
+	private Object getParticlePacket(double pX, double pY, double pZ, float oX, float oY, float oZ, float extra, int count, boolean force, DustOptions dustOptions) {
 		try {
 			Object nmsParticleData = particleDataToNms(Particle.REDSTONE, dustOptions);			
 			Object particlePacket = ReflectionUtil.invokeConstructor(packetPlayOutWorldParticleClass, 
@@ -182,7 +296,7 @@ public class HighlightAreaOfEffectExecutor {
 		}
 	}
 	
-	private static void spawnParticles(List<Object> particlePackets, Player player) {
+	private void spawnParticles(List<Object> particlePackets, Player player) {
 		try {
 			Object entityPlayerObject = ReflectionUtil.invokeMethod(craftPlayerClass, player, "getHandle");
 			Object playerConnectionObject;
@@ -201,7 +315,7 @@ public class HighlightAreaOfEffectExecutor {
 		}
 	}
 	
-	private static Object particleDataToNms(Particle a, DustOptions b) {
+	private Object particleDataToNms(Particle a, DustOptions b) {
 		try {
 			Object dataAsNMS = ReflectionUtil.invokeMethod(craftParticleClass, null, "toNMS", new Class<?>[] { Particle.class, Object.class}, new Object[] {a, b});
 			return dataAsNMS;
@@ -211,7 +325,7 @@ public class HighlightAreaOfEffectExecutor {
 		}
 	}
 	
-	private static class TorchParticleObject {
+	private class TorchParticleObject {
 		
 		private Color particleColor;
 		private List<Location> circleLocations;

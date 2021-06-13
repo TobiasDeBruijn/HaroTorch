@@ -1,5 +1,7 @@
 package nl.thedutchmc.harotorch.commands;
 
+import java.util.HashMap;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,78 +17,37 @@ import nl.thedutchmc.harotorch.lang.LangHandler;
 
 public class TorchCommandExecutor implements CommandExecutor {
 
-	private HaroTorch plugin;
+	private final HaroTorch plugin;
+	private final HashMap<String, SubCommand> subcommands;
 	
 	public TorchCommandExecutor(HaroTorch plugin) {
 		this.plugin = plugin;
+		
+		HashMap<String, SubCommand> subCommands = new HashMap<>();
+		subCommands.put("help", new HelpExecutor());
+		subCommands.put("version", new VersionExecutor());
+		subCommands.put("convert", new ConvertExecutor());
+		subCommands.put("give", new GiveExecutor());
+		subCommands.put("highlight", new HighlightExecutor());
+		subCommands.put("aoe", new HighlightAreaOfEffectExecutor());
+		this.subcommands = subCommands;
 	}
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-		
+				
 		if(args.length < 1) {
 			String msg = LangHandler.activeLang.getLangMessages().get("missingArguments").replaceAll("%HELP_COMMAND%", ChatColor.RED + "/torch help" + ChatColor.GOLD);
 			sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + msg);
 			return true;
 		}
 		
-		if(args[0].equalsIgnoreCase("help")) {
-			if(!sender.hasPermission("harotorch.help")) {
-				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + LangHandler.activeLang.getLangMessages().get("noPermission"));
-				return true;
-			}
-			
-			return HelpExecutor.help(sender);
-		}
-		
-		else if(args[0].equalsIgnoreCase("version")) {
-			if(!sender.hasPermission("harotorch.version")) {
-				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + LangHandler.activeLang.getLangMessages().get("noPermission"));
-				return true;
-			}
-			
-			return VersionExecutor.version(sender, plugin);
-		}
-		
-		else if(args[0].equalsIgnoreCase("convert")) {
-			if(!sender.hasPermission("harotorch.convert")) {
-				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + LangHandler.activeLang.getLangMessages().get("noPermission"));
-				return true;
-			}
-			
-			return ConvertExecutor.convert(sender);
-		}
-		
-		else if(args[0].equalsIgnoreCase("give")) {
-			if(!sender.hasPermission("harotorch.give")) {
-				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + LangHandler.activeLang.getLangMessages().get("noPermission"));
-				return true;
-			}
-			
-			return GiveExecutor.give(sender, args);
-		}
-		
-		else if(args[0].equalsIgnoreCase("highlight")) {
-			if(!sender.hasPermission("harotorch.highlight")) {
-				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + LangHandler.activeLang.getLangMessages().get("noPermission"));
-				return true;
-			}
-			
-			return HighlightExecutor.highlight(sender, args, plugin);
-		}
-		
-		else if(args[0].equalsIgnoreCase("aoe")) {
-			if(!sender.hasPermission("harotorch.aoe")) {
-				sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + LangHandler.activeLang.getLangMessages().get("noPermission"));
-				return true;
-			}
-			
-			HighlightAreaOfEffectExecutor.aoe(sender, plugin);
-			
+		SubCommand c = this.subcommands.get(args[0]);
+		if(!sender.hasPermission("harotorch." + args[0])) {
+			sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + LangHandler.activeLang.getLangMessages().get("noPermission"));
 			return true;
 		}
 		
-		return false;
+		return c.run(this.plugin, sender, args);
 	}
-	
 }

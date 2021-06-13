@@ -21,13 +21,10 @@ import nl.thedutchmc.harotorch.HaroTorch;
 
 public class StorageHandler {
 
-	private HaroTorch plugin;
 	
 	private String basePath;
 	
 	public StorageHandler(HaroTorch plugin) {
-		this.plugin = plugin;
-		
 		basePath = plugin.getDataFolder() + File.separator + "Torches";
 	}
 	
@@ -52,7 +49,7 @@ public class StorageHandler {
 				result.add(t);
 				
 			} catch (IOException | ClassNotFoundException e) {
-				plugin.logWarn("An Exception was thrown whilst trying to read a Torch!");
+				HaroTorch.logWarn("An Exception was thrown whilst trying to read a Torch!");
 				return null;
 			}
 		}
@@ -69,7 +66,7 @@ public class StorageHandler {
 			try {
 				outFile.createNewFile();
 			} catch (IOException e) {
-				plugin.logWarn("There was an error creating the Torch (" + getFileName(torch) + ".torch" + "). An IOException was thrown!");
+				HaroTorch.logWarn("There was an error creating the Torch (" + getFileName(torch) + ".torch" + "). An IOException was thrown!");
 			}
 		}
 		
@@ -83,10 +80,10 @@ public class StorageHandler {
 			fos.close();
 			
 		} catch (FileNotFoundException e) {
-			plugin.logWarn("There was an error creating the Torch (" + getFileName(torch) + ".torch" + "). A FileNotFoundException was thrown!");
+			HaroTorch.logWarn("There was an error creating the Torch (" + getFileName(torch) + ".torch" + "). A FileNotFoundException was thrown!");
 
 		} catch (IOException e) {
-			plugin.logWarn("There was an error creating the Torch (" + getFileName(torch) + ".torch" + "). An IOException was thrown!");
+			HaroTorch.logWarn("There was an error creating the Torch (" + getFileName(torch) + ".torch" + "). An IOException was thrown!");
 
 		}
 	}
@@ -104,8 +101,7 @@ public class StorageHandler {
 			try {
 				Files.createDirectories(Paths.get(storageFolder.getAbsolutePath()));
 			} catch (IOException | SecurityException e) {
-				plugin.logWarn("Failed to create Torch storage directory! Please check your file permissions!");
-			
+				HaroTorch.logWarn("Failed to create Torch storage directory! Please check your file permissions!");
 				return null;
 			}
 		}
@@ -119,10 +115,7 @@ public class StorageHandler {
 			
 			return result;
 		} catch(IOException e) {
-			plugin.logWarn("A IOException was thrown whilst discovering Torches!");
-		
-			e.printStackTrace();
-			
+			HaroTorch.logWarn("A IOException was thrown whilst discovering Torches!");
 			return null;
 		}
 	}

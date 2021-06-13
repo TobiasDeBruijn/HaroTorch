@@ -37,16 +37,15 @@ public class LangHandler {
 	private Properties props;
 	
 	public void load() {
-		
 		String activeLangPath = "";
 		for(String langFile : discover()) {
-			if(langFile.endsWith(HaroTorch.getConfigHandler().activeLang + ".properties")) activeLangPath = langFile;
+			if(langFile.endsWith(this.plugin.getConfigManifest().activeLang + ".properties")) activeLangPath = langFile;
 		}
 		
 		if(activeLangPath.equals("")) {
-			plugin.logWarn("Active language file " + HaroTorch.getConfigHandler().activeLang + ".properties not found! Please check your Lang directory and your config file. Defaulting to English");
+			HaroTorch.logWarn("Active language file " + this.plugin.getConfigManifest().activeLang + ".properties not found! Please check your Lang directory and your config file. Defaulting to English");
 			configFile = new File(basePath, "en.properties");
-			HaroTorch.getConfigHandler().activeLang = "en";
+			this.plugin.getConfigManifest().activeLang = "en";
 		} else {
 			configFile = new File(activeLangPath);
 		}
@@ -59,7 +58,7 @@ public class LangHandler {
 			try {
 				FileUtils.copyToFile(plugin.getResource("en.properties"), configFile);
 			} catch (IOException e) {
-				plugin.logWarn("Something went wrong whilst trying to create " + configFile.getAbsolutePath());
+				HaroTorch.logWarn("Something went wrong whilst trying to create " + configFile.getAbsolutePath());
 				e.printStackTrace();
 			}
 		}
@@ -68,18 +67,16 @@ public class LangHandler {
 			props = new Properties();
 			props.load(new InputStreamReader(new FileInputStream(configFile), Charset.forName("UTF-8")));
 			
-			readLang(HaroTorch.getConfigHandler().activeLang);
+			readLang(this.plugin.getConfigManifest().activeLang);
 		} catch(FileNotFoundException e) {
-			plugin.logWarn("Language file not found!");
+			HaroTorch.logWarn("Language file not found!");
 		} catch(IOException e) {
 			e.printStackTrace();
 		}
 	}
 	
 	private void readLang(String lang) {
-		
 		HashMap<String, String> langMap = new HashMap<>();
-		
 		for(String key : props.stringPropertyNames()) {
 			String value = props.getProperty(key).toString();
 			
@@ -99,32 +96,23 @@ public class LangHandler {
 	}
 	
 	private List<String> discover() {
-		
 		File storageFolder = new File(basePath);
-		
 		if(!storageFolder.exists()) {
 			try {
 				Files.createDirectories(Paths.get(storageFolder.getAbsolutePath()));
 			} catch (IOException | SecurityException e) {
-				plugin.logWarn("Failed to create Lang storage directory! Please check your file permissions!");
-			
+				HaroTorch.logWarn("Failed to create Lang storage directory! Please check your file permissions!");
 				return null;
 			}
 		}
 		
 		try {
 			Stream<Path> walk = Files.walk(Paths.get(storageFolder.getAbsolutePath()));
-			
 			List<String> result = walk.map(x -> x.toString()).filter(f -> f.endsWith(".properties")).collect(Collectors.toList());
-			
 			walk.close();
-			
 			return result;
 		} catch(IOException e) {
-			plugin.logWarn("A IOException was thrown whilst discovering Lang files!");
-		
-			e.printStackTrace();
-			
+			HaroTorch.logWarn("A IOException was thrown whilst discovering Lang files!");
 			return null;
 		}
 	}

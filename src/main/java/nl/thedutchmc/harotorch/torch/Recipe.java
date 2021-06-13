@@ -20,8 +20,8 @@ public class Recipe {
 	}
 	
 	public ShapedRecipe getTorchRecipe() {
-		HashMap<Character, Material> keys = HaroTorch.getConfigHandler().recipeKeys;
-		List<String> shape = HaroTorch.getConfigHandler().recipeShape;
+		HashMap<Character, Material> keys = this.plugin.getConfigManifest().getRecipeKeys();
+		List<String> shape = this.plugin.getConfigManifest().getRecipeShape();
 		
 		ItemStack stack = TorchHandler.getTorch(1);
 		ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(plugin, "haro_torch"), stack);

@@ -21,6 +21,7 @@ permissions:
    harotorch.help: true
    harotorch.version: true
    harotorch.aoe: true
+   harotorch.breakall: true
  harotorch.give:
   description: /torch give
   default: op
@@ -39,3 +40,6 @@ permissions:
  harotorch.aoe:
   description: /torch aoe
   default: true
+ harotorch.breakall:
+  description: Allows a Player to break all torches
+  default: false

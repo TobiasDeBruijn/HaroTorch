@@ -12,11 +12,18 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
 import nl.thedutchmc.harotorch.HaroTorch;
+import nl.thedutchmc.harotorch.config.ConfigManifest.TorchRangeShape;
 import nl.thedutchmc.harotorch.torch.Torch;
 import nl.thedutchmc.harotorch.torch.TorchHandler;
 
 public class CreatureSpawnEventListener implements Listener {
 
+	private HaroTorch plugin;
+	
+	public CreatureSpawnEventListener(HaroTorch plugin) {
+		this.plugin = plugin;
+	}
+	
 	@EventHandler
 	public void onCreatureSpawnEvent(CreatureSpawnEvent event) {
 		
@@ -34,10 +41,10 @@ public class CreatureSpawnEventListener implements Listener {
 		EntityType et = event.getEntityType();
 
 		//If the spawned mob is in the exclusion list, we dont want to block it
-		if(HaroTorch.getConfigHandler().mobExclusionList.contains(et)) return;
+		if(this.plugin.getConfigManifest().getExcludedEntities().contains(et)) return;
 		
 		//Check if we should only be blocking hostile mobs
-		if(HaroTorch.getConfigHandler().onlyBlockHostileMobs) {
+		if(this.plugin.getConfigManifest().onlyBlockHostileMobs) {
 		
 			//Check if the spawned Entity is a Monster, Phantom, Slime, Ghast or Magma cube and not a Wither
 			// https://github.com/TheDutchMC/HaroTorch/issues/5
@@ -72,9 +79,20 @@ public class CreatureSpawnEventListener implements Listener {
 			//Check if the spawn occured in the same World as the current Torch
 			if(!t.getLocation().getWorld().equals(entityLocation.getWorld())) continue;
 			
-			//Check if the distance cylindrical is less than the defined range squared
-			if(TorchHandler.getDistanceCylindrical(t.getLocation(), entityLocation) < HaroTorch.RANGE) {
-				return true;
+			if(this.plugin.getConfigManifest().getTorchRangeShape() == TorchRangeShape.CIRCLE) {
+				//Check if the distance cylindrical is less than the defined range squared
+				if(TorchHandler.getDistanceCylindrical(t.getLocation(), entityLocation) < HaroTorch.RANGE) {
+					return true;
+				}
+			} else {
+				Location lTorch = t.getLocation();
+				double distanceX = Math.abs(lTorch.getX() - entityLocation.getX());
+				double distanceZ = Math.abs(lTorch.getZ() - entityLocation.getZ());
+				
+				int radius = this.plugin.getConfigManifest().torchRange;
+				if(distanceX < radius && distanceZ < radius) {
+					return true;
+				}	
 			}
 		}
 		

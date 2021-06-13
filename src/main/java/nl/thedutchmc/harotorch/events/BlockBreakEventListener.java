@@ -16,6 +16,12 @@ import nl.thedutchmc.harotorch.torch.TorchHandler;
 
 public class BlockBreakEventListener implements Listener {
 
+	private HaroTorch plugin;
+	
+	public BlockBreakEventListener(HaroTorch plugin) {
+		this.plugin = plugin;
+	}
+	
 	@EventHandler
 	public void onBlockBreakEvent(BlockBreakEvent event) {
 		
@@ -48,7 +54,7 @@ public class BlockBreakEventListener implements Listener {
 		}
 		
 		UUID torchOwner = TorchHandler.getTorchOwner(loc);
-		if(!HaroTorch.getConfigHandler().allowRemoveNotOwnedTorch && !event.getPlayer().getUniqueId().equals(torchOwner)) {
+		if(!this.plugin.getConfigManifest().allowRemoveNotOwnedTorch && !event.getPlayer().hasPermission("harotorch.breakall") && !event.getPlayer().getUniqueId().equals(torchOwner)) {
 			event.getPlayer().sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + LangHandler.activeLang.getLangMessages().get("blockBreakNotAllowedOwnerMismatch"));
 			
 			event.setCancelled(true);

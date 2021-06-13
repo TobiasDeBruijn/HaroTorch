@@ -13,6 +13,8 @@ import dev.array21.pluginstatlib.PluginStat.PluginStatBuilder;
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.harotorch.commands.TorchCommandExecutor;
 import nl.thedutchmc.harotorch.commands.TorchCommandTabCompleter;
+import nl.thedutchmc.harotorch.config.ConfigHandler;
+import nl.thedutchmc.harotorch.config.ConfigManifest;
 import nl.thedutchmc.harotorch.events.*;
 import nl.thedutchmc.harotorch.lang.LangHandler;
 import nl.thedutchmc.harotorch.torch.Recipe;
@@ -21,13 +23,17 @@ import nl.thedutchmc.harotorch.update.UpdateChecker;
 
 public class HaroTorch extends JavaPlugin {
 	
-	private static ConfigurationHandler CONFIG;
+	private static HaroTorch INSTANCE;
+	
+	private ConfigHandler configHandler;
 	
 	public static double RANGE;
 	public static final String NMS_VERSION = Bukkit.getServer().getClass().getPackage().getName().substring(23);
 	
 	@Override
 	public void onEnable() {
+		INSTANCE = this;
+		
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -36,15 +42,16 @@ public class HaroTorch extends JavaPlugin {
 			}
 		}, "HaroTorch UpdateChecker Thread").start();
 		
-		CONFIG = new ConfigurationHandler(this);
-		CONFIG.loadConfig();
-		String jVersion = System.getProperty("java.version");
-		System.out.println(jVersion);
-		if(!CONFIG.disableStat) {
+		this.configHandler = new ConfigHandler(this);
+		this.configHandler.readConfig();
+		
+		ConfigManifest manifest = this.configHandler.getManifest();
+		
+		if(!manifest.disableStat) {
 			PluginStat stat = PluginStatBuilder.createDefault()
-					.setLogErrFn(this::logWarn)
-					.setSetUuidFn(CONFIG::setUuid)
-					.setUuid(CONFIG.statUuid)
+					.setLogErrFn(HaroTorch::logWarn)
+					.setSetUuidFn(this.configHandler::setStatUuid)
+					.setUuid(manifest.statUuid)
 					.build();
 			
 			stat.start();
@@ -54,9 +61,9 @@ public class HaroTorch extends JavaPlugin {
 		LangHandler langHandler = new LangHandler(this);
 		langHandler.load();
 		
-		this.logInfo(LangHandler.activeLang.getLangMessages().get("welcome"));
+		HaroTorch.logInfo(LangHandler.activeLang.getLangMessages().get("welcome"));
 		
-		RANGE = Math.pow(CONFIG.torchRange, 2);
+		RANGE = Math.pow(manifest.torchRange, 2);
 		
 		//TorchHandler
 		TorchHandler torchHandler = new TorchHandler(this);
@@ -67,9 +74,9 @@ public class HaroTorch extends JavaPlugin {
 		this.getServer().addRecipe(recipe.getTorchRecipe());
 		
 		//Minecraft events
-		Bukkit.getPluginManager().registerEvents(new BlockBreakEventListener(), this);
+		Bukkit.getPluginManager().registerEvents(new BlockBreakEventListener(this), this);
 		Bukkit.getPluginManager().registerEvents(new BlockPlaceEventListener(this), this);
-		Bukkit.getPluginManager().registerEvents(new CreatureSpawnEventListener(), this);
+		Bukkit.getPluginManager().registerEvents(new CreatureSpawnEventListener(this), this);
 		Bukkit.getPluginManager().registerEvents(new BlockFromToEventListener(), this);
 		Bukkit.getPluginManager().registerEvents(new BlockExplodeEventListener(), this);
 		Bukkit.getPluginManager().registerEvents(new EntityExplodeEventListener(), this);
@@ -84,7 +91,7 @@ public class HaroTorch extends JavaPlugin {
 		this.getCommand("torch").setTabCompleter(new TorchCommandTabCompleter());
 		
 		//Scheduler for particles
-		if(CONFIG.enableTorchParticles) {
+		if(manifest.enableTorchParticles) {
 			new BukkitRunnable() {
 				
 				@Override
@@ -108,23 +115,23 @@ public class HaroTorch extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		logInfo(LangHandler.activeLang.getLangMessages().get("goodbye"));
+		HaroTorch.logInfo("Thankyou for using HaroTorch. Have a good day!");
 	}
 	
-	public void logInfo(Object log) {
-		this.getLogger().info(log.toString());
+	public static void logInfo(Object log) {
+		INSTANCE.getLogger().info(log.toString());
 	}
 	
-	public void logWarn(Object log) {
-		this.getLogger().warning(log.toString());
-	}
-	
-	public static  ConfigurationHandler getConfigHandler() {
-		return HaroTorch.CONFIG;
+	public static void logWarn(Object log) {
+		INSTANCE.getLogger().warning(log.toString());
 	}
 	
 	public static String getMessagePrefix() {
 		return ChatColor.GRAY + "[" + ChatColor.AQUA + "HT" + ChatColor.GRAY + "] " + ChatColor.RESET;
+	}
+	
+	public ConfigManifest getConfigManifest() {
+		return this.configHandler.getManifest();
 	}
 	
 }

@@ -32,12 +32,12 @@ public class UpdateChecker {
 		try {
 			response = new Http().makeRequest(RequestMethod.GET, "https://api.github.com/repos/thedutchmc/harotorch/releases/latest", null, null, null, headers);
 		} catch(IOException e) {
-			this.plugin.logWarn(String.format("An issue occurred while checking what the latest version of HaroTorch is: IOException (%s)", e.getMessage()));
+			HaroTorch.logWarn(String.format("An issue occurred while checking what the latest version of HaroTorch is: IOException (%s)", e.getMessage()));
 			return;
 		}
 		
 		if(response.getResponseCode() != 200) {
-			this.plugin.logWarn(String.format("Got a non-200 status code while checking what the latest version of HaroTorch is: HTTP-%d (%s)", response.getResponseCode(), response.getConnectionMessage()));
+			HaroTorch.logWarn(String.format("Got a non-200 status code while checking what the latest version of HaroTorch is: HTTP-%d (%s)", response.getResponseCode(), response.getConnectionMessage()));
 			return;
 		}
 		
@@ -64,10 +64,10 @@ public class UpdateChecker {
 			return;
 		}
 		
-		this.plugin.logInfo("You are running the latest version of HaroTorch. Nice work! :D");
+		HaroTorch.logInfo("You are running the latest version of HaroTorch. Nice work! :D");
 	}
 	
 	private void updateAvailable(String url, String latestVersion) {
-		this.plugin.logWarn(String.format("An update is available. You are running version %s, the latest version is %s. You can download it here: %s", this.plugin.getDescription().getVersion(), latestVersion, url));
+		HaroTorch.logWarn(String.format("An update is available. You are running version %s, the latest version is %s. You can download it here: %s", this.plugin.getDescription().getVersion(), latestVersion, url));
 	}
 }

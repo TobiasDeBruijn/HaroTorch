@@ -38,7 +38,7 @@ public class BlockPlaceEventListener implements Listener {
 			Integer torchCountNullable = TorchHandler.getTorchCountForPlayer(event.getPlayer().getUniqueId());
 			int torchCount = (torchCountNullable != null) ? torchCountNullable : 0;
 			
-			Integer torchPlaceLimit = HaroTorch.getConfigHandler().torchPlaceLimit;
+			Integer torchPlaceLimit = this.plugin.getConfigManifest().torchPlaceLimit;
 			if(torchPlaceLimit != null && torchPlaceLimit != -1 && torchCount >= torchPlaceLimit) {
 				event.getPlayer().sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + LangHandler.activeLang.getLangMessages().get("torchLimitReached")
 						.replaceAll("%TORCH_LIMIT%", ChatColor.RED + String.valueOf((int) torchPlaceLimit) + ChatColor.GOLD)

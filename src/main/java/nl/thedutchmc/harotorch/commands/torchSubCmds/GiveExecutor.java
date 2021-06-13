@@ -5,12 +5,13 @@ import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.harotorch.HaroTorch;
+import nl.thedutchmc.harotorch.commands.SubCommand;
 import nl.thedutchmc.harotorch.lang.LangHandler;
 import nl.thedutchmc.harotorch.torch.TorchHandler;
 
-public class GiveExecutor {
+public class GiveExecutor implements SubCommand {
 
-	public static boolean give(CommandSender sender, String[] args) {
+	public boolean run(HaroTorch plugin, CommandSender sender, String[] args) {
 		
 		if(!(sender instanceof Player)) {
 			sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.RED + LangHandler.activeLang.getLangMessages().get("commandOnlyForPlayers"));

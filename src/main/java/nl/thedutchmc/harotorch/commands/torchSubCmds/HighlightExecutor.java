@@ -13,11 +13,12 @@ import org.bukkit.scheduler.BukkitRunnable;
 import dev.array21.bukkitreflectionlib.ReflectionUtil;
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.harotorch.HaroTorch;
+import nl.thedutchmc.harotorch.commands.SubCommand;
 import nl.thedutchmc.harotorch.lang.LangHandler;
 import nl.thedutchmc.harotorch.torch.TorchHandler;
 
 @SuppressWarnings("deprecation")
-public class HighlightExecutor {
+public class HighlightExecutor implements SubCommand {
 	
 	private static HashMap<UUID, Long> lastCommandTimestamps = new HashMap<>();
 	
@@ -36,9 +37,8 @@ public class HighlightExecutor {
 	private static Class<?> packetPlayOutEntityDestroyClass;
 	private static Class<?> packetPlayOutEntityDestroyInterfaceClass;
 	private static Class<?> dataWatcherClass;
-
 	private static Object entityMagmaCubeField;
-	
+
 	static {
 		try {
 			craftPlayerClass = ReflectionUtil.getBukkitClass("entity.CraftPlayer");
@@ -81,9 +81,9 @@ public class HighlightExecutor {
 		}
 	}
 
-	public static boolean highlight(CommandSender sender, String[] args, HaroTorch plugin) {
+	public boolean run(HaroTorch plugin, CommandSender sender, String[] args) {
 		
-		Integer commandCooldown = HaroTorch.getConfigHandler().commandCooldown;
+		Integer commandCooldown = plugin.getConfigManifest().commandCooldown;
 		if(commandCooldown != null && commandCooldown > 0) {
 			Long lastCommandUseTimestamp = lastCommandTimestamps.get(((Player) sender).getUniqueId());
 			if(lastCommandUseTimestamp != null) {
@@ -96,12 +96,12 @@ public class HighlightExecutor {
 			lastCommandTimestamps.put(((Player) sender).getUniqueId(), System.currentTimeMillis() + (commandCooldown * 1000));
 		}
 		
-		List<Location> nearbyTorches = TorchHandler.getTorchLocationsNearPlayer((Player) sender, HaroTorch.getConfigHandler().torchHighlightRange);
+		List<Location> nearbyTorches = TorchHandler.getTorchLocationsNearPlayer((Player) sender, plugin.getConfigManifest().torchHighlightRange);
 		Player p = (Player) sender;
 		
 		List<Integer> returnedIds = spawnHighlight(p,  nearbyTorches);
 		
-		String msg = LangHandler.activeLang.getLangMessages().get("startingHiglight").replaceAll("%SECONDS%", ChatColor.RED + String.valueOf(HaroTorch.getConfigHandler().torchHighlightTime) + ChatColor.GOLD);
+		String msg = LangHandler.activeLang.getLangMessages().get("startingHiglight").replaceAll("%SECONDS%", ChatColor.RED + String.valueOf(plugin.getConfigManifest().torchHighlightTime) + ChatColor.GOLD);
 		p.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + msg);
 		
 		new BukkitRunnable() {
@@ -111,13 +111,13 @@ public class HighlightExecutor {
 				killHighlighted(returnedIds, p);
 				p.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + LangHandler.activeLang.getLangMessages().get("endingHighlight"));
 			}
-		}.runTaskLater(plugin, HaroTorch.getConfigHandler().torchHighlightTime * 20);
+		}.runTaskLater(plugin, plugin.getConfigManifest().torchHighlightTime * 20);
 		
 		
 		return true;
 	}
 	
-	public static List<Integer> spawnHighlight(Player player, List<Location> locations) {
+	public List<Integer> spawnHighlight(Player player, List<Location> locations) {
 		
 		List<Integer> result = new ArrayList<>();
 		
@@ -177,7 +177,7 @@ public class HighlightExecutor {
 		return result;
 	}
 	
-	public static void killHighlighted(List<Integer> ids, Player player) {
+	public void killHighlighted(List<Integer> ids, Player player) {
 		try {
 			Object entityPlayerObject = ReflectionUtil.invokeMethod(craftPlayerClass, player, "getHandle");
 			Object playerConnectionObject;
@@ -207,7 +207,7 @@ public class HighlightExecutor {
 		}
 	}
 	
-	private static int[] toIntArray(List<Integer> a) {
+	private int[] toIntArray(List<Integer> a) {
 		int[] b = new int[a.size()];
 		for(int i = 0; i < a.size(); i++) {
 			b[i] = a.get(i);

@@ -11,13 +11,14 @@ import org.bukkit.plugin.Plugin;
 import net.md_5.bungee.api.ChatColor;
 import nl.thedutchmc.haro_torch.plugin.torch.Torchy;
 import nl.thedutchmc.harotorch.HaroTorch;
+import nl.thedutchmc.harotorch.commands.SubCommand;
 import nl.thedutchmc.harotorch.lang.LangHandler;
 import nl.thedutchmc.harotorch.torch.Torch;
 import nl.thedutchmc.harotorch.torch.TorchHandler;
 
-public class ConvertExecutor {
+public class ConvertExecutor implements SubCommand {
 
-	public static boolean convert(CommandSender sender) {
+	public boolean run(HaroTorch plugin, CommandSender sender, String[] args) {
 		
 		if(Bukkit.getPluginManager().getPlugin("HaroTorch") == null) {
 			sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + LangHandler.activeLang.getLangMessages().get("v1NotInstalledMessage"));

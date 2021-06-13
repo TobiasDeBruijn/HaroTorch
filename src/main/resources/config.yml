@@ -72,3 +72,5 @@ torchPlaceLimit: -1
 
 # Command cooldown in seconds. Default: 30. -1 to disable.
 commandCooldown: 30
+
+shapeCircle: true
