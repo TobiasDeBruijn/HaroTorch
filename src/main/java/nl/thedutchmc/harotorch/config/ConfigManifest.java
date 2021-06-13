@@ -62,7 +62,7 @@ public class ConfigManifest {
 	 * False if it should be a square.
 	 */
 	@Nullable
-	private Boolean shapeCircle;
+	public Boolean shapeCircle;
 	
 	/**
 	 * What should the range of the Torch be
