@@ -110,13 +110,13 @@ public class ConfigManifest {
 	 * The keys used in {@link #recipeShape} mapped to a material.
 	 */
 	@Required
-	private String[] recipeKeys;
+	public String[] recipeKeys;
 	
 	/**
 	 * What mobs should be excluded from the block list
 	 */
 	@Nullable
-	private String[] mobsExcludeFromBlockList;
+	public String[] mobsExcludeFromBlockList;
 	
 	/**
 	 * Returns if Statistics are enabled
