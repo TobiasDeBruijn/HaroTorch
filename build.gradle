@@ -4,7 +4,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     id 'java'
     id 'eclipse'
-    id 'com.github.johnrengelman.shadow' version '5.0.0'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
     
 }
 
@@ -13,8 +13,8 @@ allprojects {
 	version = pluginVersion
 	group = pluginGroup	
 
-	sourceCompatibility = 1.11
-	targetCompatibility = 1.11
+	sourceCompatibility = 1.16
+	targetCompatibility = 1.16
 
 	repositories {
 		mavenCentral()
@@ -33,15 +33,19 @@ allprojects {
 
 dependencies {
 	
-	compileOnly 'org.spigotmc:spigot-api:1.16.1-R0.1-SNAPSHOT'
+	compileOnly 'org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT'
 	
-	//We depend on the old HaroTorch so we can convert Torches to the v2 format
 	implementation 'com.github.TheDutchMC:HaroTorch:v1-SNAPSHOT'
-	
-	compile 'commons-io:commons-io:2.6'
-	compile 'com.github.TheDutchMC:BukkitReflectionUtil:1.1'
-    compile 'com.github.TheDutchMC:HttpLib:1.1'
-    compile 'dev.array21:pluginstatlib:1.0.5'
+	implementation 'commons-io:commons-io:2.6'
+	implementation 'dev.array21:bukkit-reflection-util:1.0'
+    implementation 'dev.array21:pluginstatlib:1.0.5'
+		
+    implementation 'com.github.TheDutchMC:HttpLib:1.1'
+    
+}
+
+processResources  {
+	duplicatesStrategy = DuplicatesStrategy.INCLUDE
 }
 
 task testJar(type: ShadowJar) {
@@ -49,7 +53,7 @@ task testJar(type: ShadowJar) {
 	archiveClassifier = 'DEV'
 
 	from sourceSets.main.output
-	configurations = [project.configurations.runtime]
+	configurations = [project.configurations.runtimeClasspath]
 	
 	relocate 'dev.array21', 'nl.thedutchmc.harotorch.libs.dev.array21'
 	relocate 'org.apache.commons.io', 'nl.thedutchmc.harotorch.libs.org.apache.commons.io'
@@ -63,7 +67,7 @@ task releaseJar(type: ShadowJar) {
 	archiveClassifier = 'RELEASE'
 
 	from sourceSets.main.output
-	configurations = [project.configurations.runtime]
+	configurations = [project.configurations.runtimeClasspath]
 	
 	relocate 'dev.array21', 'nl.thedutchmc.harotorch.libs.dev.array21'
 	relocate 'org.apache.commons.io', 'nl.thedutchmc.harotorch.libs.org.apache.commons.io'
@@ -73,13 +77,14 @@ task releaseJar(type: ShadowJar) {
 }
 
 task ghActions(type: ShadowJar) {
+	duplicatesStrategy = DuplicatesStrategy.INCLUDE
 	description 'GitHub Actions task. Not used for regular development'
 	version = ''
 	archiveClassifier = ''
 	archiveBaseName = 'output'
 
 	from sourceSets.main.output
-	configurations = [project.configurations.runtime]
+	configurations = [project.configurations.runtimeClasspath]
 	
 	relocate 'dev.array21', 'nl.thedutchmc.harotorch.libs.dev.array21'
 	relocate 'org.apache.commons.io', 'nl.thedutchmc.harotorch.libs.org.apache.commons.io'

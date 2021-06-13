@@ -16,6 +16,7 @@ import nl.thedutchmc.harotorch.HaroTorch;
 import nl.thedutchmc.harotorch.lang.LangHandler;
 import nl.thedutchmc.harotorch.torch.TorchHandler;
 
+@SuppressWarnings("deprecation")
 public class HighlightExecutor {
 	
 	private static HashMap<UUID, Long> lastCommandTimestamps = new HashMap<>();
@@ -42,25 +43,38 @@ public class HighlightExecutor {
 		try {
 			craftPlayerClass = ReflectionUtil.getBukkitClass("entity.CraftPlayer");
 			craftWorldClass = ReflectionUtil.getBukkitClass("CraftWorld");
-			worldClass = ReflectionUtil.getNmsClass("World");
 			
-			entityTypesClass = ReflectionUtil.getNmsClass("EntityTypes");
-			entityMagmaCubeField = ReflectionUtil.getObject(null, entityTypesClass, "MAGMA_CUBE");
-			entityMagmaCubeClass = ReflectionUtil.getNmsClass("EntityMagmaCube");
-			entitySlimeClass = ReflectionUtil.getNmsClass("EntitySlime");
-			entityClass = ReflectionUtil.getNmsClass("Entity");
-			entityLivingClass = ReflectionUtil.getNmsClass("EntityLiving");
-			
-			packetPlayOutEntityLivingClass = ReflectionUtil.getNmsClass("PacketPlayOutSpawnEntityLiving");
-			packetPlayOutEntityLivingInterfaceClass = packetPlayOutEntityLivingClass.getInterfaces()[0];
+			if(ReflectionUtil.isUseNewSpigotPackaging()) {
+				worldClass = ReflectionUtil.getMinecraftClass("world.level.World");
+				entityTypesClass = ReflectionUtil.getMinecraftClass("world.entity.EntityTypes");
+				entityMagmaCubeClass = ReflectionUtil.getMinecraftClass("world.entity.monster.EntityMagmaCube");
+				entitySlimeClass = ReflectionUtil.getMinecraftClass("world.entity.monster.EntitySlime");
+				entityClass = ReflectionUtil.getMinecraftClass("world.entity.Entity");
+				entityLivingClass = ReflectionUtil.getMinecraftClass("world.entity.EntityLiving");
+				packetPlayOutEntityLivingClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutSpawnEntityLiving");
+				packetPlayOutEntityMetadataClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutEntityMetadata");
+				packetPlayOutEntityDestroyClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutEntityDestroy");
+				dataWatcherClass = ReflectionUtil.getMinecraftClass("network.syncher.DataWatcher");
 
-			packetPlayOutEntityMetadataClass = ReflectionUtil.getNmsClass("PacketPlayOutEntityMetadata");			
+				entityMagmaCubeField = ReflectionUtil.getObject(null, entityTypesClass, "X");
+			} else {
+				worldClass = ReflectionUtil.getNmsClass("World");
+				entityTypesClass = ReflectionUtil.getNmsClass("EntityTypes");
+				entityMagmaCubeClass = ReflectionUtil.getNmsClass("EntityMagmaCube");
+				entitySlimeClass = ReflectionUtil.getNmsClass("EntitySlime");
+				entityClass = ReflectionUtil.getNmsClass("Entity");
+				entityLivingClass = ReflectionUtil.getNmsClass("EntityLiving");
+				packetPlayOutEntityLivingClass = ReflectionUtil.getNmsClass("PacketPlayOutSpawnEntityLiving");
+				packetPlayOutEntityMetadataClass = ReflectionUtil.getNmsClass("PacketPlayOutEntityMetadata");			
+				packetPlayOutEntityDestroyClass = ReflectionUtil.getNmsClass("PacketPlayOutEntityDestroy");
+				dataWatcherClass = ReflectionUtil.getNmsClass("DataWatcher");
+				
+				entityMagmaCubeField = ReflectionUtil.getObject(null, entityTypesClass, "MAGMA_CUBE");
+			}
+			
+			packetPlayOutEntityLivingInterfaceClass = packetPlayOutEntityLivingClass.getInterfaces()[0];
 			packetPlayOutEntityMetadataInterfaceClass = packetPlayOutEntityMetadataClass.getInterfaces()[0];
-			
-			packetPlayOutEntityDestroyClass = ReflectionUtil.getNmsClass("PacketPlayOutEntityDestroy");
 			packetPlayOutEntityDestroyInterfaceClass = packetPlayOutEntityDestroyClass.getInterfaces()[0];
-			
-			dataWatcherClass = ReflectionUtil.getNmsClass("DataWatcher");
 			
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -109,7 +123,12 @@ public class HighlightExecutor {
 		
 		try {
 			Object entityPlayerObject = ReflectionUtil.invokeMethod(craftPlayerClass, player, "getHandle");
-			Object playerConnectionObject = ReflectionUtil.getObject(entityPlayerObject, "playerConnection");
+			Object playerConnectionObject;
+			if(ReflectionUtil.isUseNewSpigotPackaging()) {
+				playerConnectionObject = ReflectionUtil.getObject(entityPlayerObject, "b");
+			} else {
+				playerConnectionObject = ReflectionUtil.getObject(entityPlayerObject, "playerConnection");
+			}
 			
 			for(Location loc : locations) {
 				Object nmsWorld = ReflectionUtil.invokeMethod(craftWorldClass, loc.getWorld(), "getHandle");
@@ -161,12 +180,27 @@ public class HighlightExecutor {
 	public static void killHighlighted(List<Integer> ids, Player player) {
 		try {
 			Object entityPlayerObject = ReflectionUtil.invokeMethod(craftPlayerClass, player, "getHandle");
-			Object playerConnectionObject = ReflectionUtil.getObject(entityPlayerObject, "playerConnection");
+			Object playerConnectionObject;
+			if(ReflectionUtil.isUseNewSpigotPackaging()) {
+				playerConnectionObject = ReflectionUtil.getObject(entityPlayerObject, "b");
+			} else {
+				playerConnectionObject = ReflectionUtil.getObject(entityPlayerObject, "playerConnection");
+			}
 			
-			Object destroyEntityPacket = ReflectionUtil.invokeConstructor(packetPlayOutEntityDestroyClass, new Class<?>[] { int[].class }, new Object[] { toIntArray(ids) });
-			ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket",
-					new Class<?>[] { packetPlayOutEntityDestroyInterfaceClass }, 
-					new Object[] { destroyEntityPacket });
+			if(ReflectionUtil.isUseNewSpigotPackaging()) {
+				for(int id : ids) {
+					Object destroyEntityPacket = ReflectionUtil.invokeConstructor(packetPlayOutEntityDestroyClass, new Class<?>[] { int.class }, new Object[] { id });
+					ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket",
+							new Class<?>[] { packetPlayOutEntityDestroyInterfaceClass }, 
+							new Object[] { destroyEntityPacket });
+				}
+			} else {
+				Object destroyEntityPacket = ReflectionUtil.invokeConstructor(packetPlayOutEntityDestroyClass, new Class<?>[] { int[].class }, new Object[] { toIntArray(ids) });
+				ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket",
+						new Class<?>[] { packetPlayOutEntityDestroyInterfaceClass }, 
+						new Object[] { destroyEntityPacket });
+			}
+
 			
 		} catch(Exception e) {
 			e.printStackTrace();

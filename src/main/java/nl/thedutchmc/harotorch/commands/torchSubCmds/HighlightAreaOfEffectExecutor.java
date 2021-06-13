@@ -22,6 +22,8 @@ import nl.thedutchmc.harotorch.HaroTorch;
 import nl.thedutchmc.harotorch.lang.LangHandler;
 import nl.thedutchmc.harotorch.torch.TorchHandler;
 
+// ReflectionUtil.getNmsClass(String) is deprecated, kept for backwards compatibility with MC:1.16 and older.
+@SuppressWarnings("deprecation")
 public class HighlightAreaOfEffectExecutor {
 
 	private static HashMap<UUID, Long> lastCommandTimestamps = new HashMap<>();
@@ -34,12 +36,22 @@ public class HighlightAreaOfEffectExecutor {
 	
 	static {
 		try {
-			packetPlayOutWorldParticleClass = ReflectionUtil.getNmsClass("PacketPlayOutWorldParticles");
+			if(ReflectionUtil.isUseNewSpigotPackaging()) {
+				packetPlayOutWorldParticleClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutWorldParticles");
+			} else {
+				packetPlayOutWorldParticleClass = ReflectionUtil.getNmsClass("PacketPlayOutWorldParticles");
+			}
+		
 			packetPlayOutWorldParticleInterfaceClass = packetPlayOutWorldParticleClass.getInterfaces()[0];
 			
 			craftPlayerClass = ReflectionUtil.getBukkitClass("entity.CraftPlayer");
 			craftParticleClass = ReflectionUtil.getBukkitClass("CraftParticle");
-			particleParamClass = ReflectionUtil.getNmsClass("ParticleParam");
+			
+			if(ReflectionUtil.isUseNewSpigotPackaging()) {
+				particleParamClass = ReflectionUtil.getMinecraftClass("core.particles.ParticleParam");
+			} else {
+				particleParamClass = ReflectionUtil.getNmsClass("ParticleParam");
+			}
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -142,6 +154,20 @@ public class HighlightAreaOfEffectExecutor {
 		return true;
 	}
 	
+	/**
+	 * Create a PacketPlayOutWorldParticle packet for Redstone particles
+	 * @param pX The X position of the particle
+	 * @param pY The Y position of the particle
+	 * @param pZ The Z position of the particle
+	 * @param oX The X offset of the particle
+	 * @param oY The Y offset of the particle
+	 * @param oZ The Z offset of the particle
+	 * @param extra Extra data for the particle. Unknown what this does. 0.005f seems to work
+	 * @param count The amount of particles to spawn
+	 * @param force Unknown what this does. False seems to work
+	 * @param dustOptions DustOptions for the particle
+	 * @return
+	 */
 	private static Object getParticlePacket(double pX, double pY, double pZ, float oX, float oY, float oZ, float extra, int count, boolean force, DustOptions dustOptions) {
 		try {
 			Object nmsParticleData = particleDataToNms(Particle.REDSTONE, dustOptions);			
@@ -159,8 +185,12 @@ public class HighlightAreaOfEffectExecutor {
 	private static void spawnParticles(List<Object> particlePackets, Player player) {
 		try {
 			Object entityPlayerObject = ReflectionUtil.invokeMethod(craftPlayerClass, player, "getHandle");
-			Object playerConnectionObject = ReflectionUtil.getObject(entityPlayerObject, "playerConnection");
-		
+			Object playerConnectionObject;
+			if(ReflectionUtil.isUseNewSpigotPackaging()) {
+				playerConnectionObject = ReflectionUtil.getObject(entityPlayerObject, "b");
+			} else {
+				playerConnectionObject = ReflectionUtil.getObject(entityPlayerObject, "playerConnection");
+			}		
 			for(Object packet : particlePackets) {
 				ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket", 
 						new Class<?>[] { packetPlayOutWorldParticleInterfaceClass }, 
