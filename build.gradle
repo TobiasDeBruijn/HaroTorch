@@ -13,9 +13,6 @@ allprojects {
 	version = pluginVersion
 	group = pluginGroup	
 
-	sourceCompatibility = 1.16
-	targetCompatibility = 1.16
-
 	repositories {
 		mavenCentral()
   	  	maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots" }
@@ -41,7 +38,6 @@ dependencies {
     implementation 'dev.array21:pluginstatlib:1.0.5'
 	implementation 'dev.array21:classvalidator:1.0.0'
     implementation 'com.github.TheDutchMC:HttpLib:1.1'
-    
 }
 
 processResources  {
@@ -55,7 +51,6 @@ task testJar(type: ShadowJar) {
 	from sourceSets.main.output
 	configurations = [project.configurations.runtimeClasspath]
 	
-	relocate 'dev.array21', 'nl.thedutchmc.harotorch.libs.dev.array21'
 	relocate 'org.apache.commons.io', 'nl.thedutchmc.harotorch.libs.org.apache.commons.io'
 	relocate 'nl.thedutchmc.httplib', 'nl.thedutchmc.harotorch.libs.nl.thedutchmc.httplib'
 	
@@ -69,7 +64,6 @@ task releaseJar(type: ShadowJar) {
 	from sourceSets.main.output
 	configurations = [project.configurations.runtimeClasspath]
 	
-	relocate 'dev.array21', 'nl.thedutchmc.harotorch.libs.dev.array21'
 	relocate 'org.apache.commons.io', 'nl.thedutchmc.harotorch.libs.org.apache.commons.io'
 	relocate 'nl.thedutchmc.httplib', 'nl.thedutchmc.harotorch.libs.nl.thedutchmc.httplib'
 	
@@ -86,7 +80,6 @@ task ghActions(type: ShadowJar) {
 	from sourceSets.main.output
 	configurations = [project.configurations.runtimeClasspath]
 	
-	relocate 'dev.array21', 'nl.thedutchmc.harotorch.libs.dev.array21'
 	relocate 'org.apache.commons.io', 'nl.thedutchmc.harotorch.libs.org.apache.commons.io'
 	relocate 'nl.thedutchmc.httplib', 'nl.thedutchmc.harotorch.libs.nl.thedutchmc.httplib'
 

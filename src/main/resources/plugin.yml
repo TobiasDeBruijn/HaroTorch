@@ -1,4 +1,4 @@
-main: nl.thedutchmc.harotorch.HaroTorch
+main: dev.array21.harotorch.HaroTorch
 name: HaroTorch-V2
 author: TheDutchMC76
 api-version: 1.16
