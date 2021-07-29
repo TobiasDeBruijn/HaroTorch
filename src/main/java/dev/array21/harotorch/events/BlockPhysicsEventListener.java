@@ -1,17 +1,24 @@
 package dev.array21.harotorch.events;
 
 import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.block.data.Openable;
 import org.bukkit.block.data.type.TrapDoor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import dev.array21.harotorch.HaroTorch;
 
 import org.bukkit.event.Listener;
 
 public class BlockPhysicsEventListener implements Listener {
 
+	private HaroTorch plugin;
+	
+	public BlockPhysicsEventListener(HaroTorch plugin) {
+		this.plugin = plugin;
+	}
+	
 	@EventHandler
 	public void onBlockPhysicsEvent(BlockPhysicsEvent event) {
 		
@@ -26,18 +33,20 @@ public class BlockPhysicsEventListener implements Listener {
 			}
 		}
 
-		//We wont break a scaffolding block when a torch is ontop of it
-		if(event.getBlock().getType() == Material.SCAFFOLDING) {
-			Location l = event.getBlock().getLocation();
-			if(!Common.checkSurroundings(l)) {
-				Block b = event.getBlock();
-			}
-		}
 		
 		//We don't want gravity blocks to fall when they (could) have a torch attached/ontop
 		if(event.getBlock().getType().hasGravity()) {
 			if(!Common.checkSurroundings(event.getBlock().getLocation())) {
 				event.setCancelled(true);
+
+	            new BukkitRunnable() {
+					@Override
+					public void run() {
+						System.out.println("Placing back block");
+						Location l = event.getBlock().getLocation();
+						l.getBlock().setType(event.getBlock().getType(), false);
+					}
+				}.runTaskLater(this.plugin, 2L);
 			}
 		}
 	}

@@ -16,7 +16,7 @@ public class Torch implements Serializable {
 	
 	public Torch(UUID torchOwner, Location torchLocation) {
 		this.torchOwner = torchOwner;
-		
+				
 		this.x = torchLocation.getBlockX();
 		this.y = torchLocation.getBlockY();
 		this.z = torchLocation.getBlockZ();

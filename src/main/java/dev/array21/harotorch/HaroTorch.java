@@ -83,7 +83,7 @@ public class HaroTorch extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new BlockPistonExtendEventListener(), this);
 		Bukkit.getPluginManager().registerEvents(new BlockPistonRetractEventListener(), this);
 		Bukkit.getPluginManager().registerEvents(new PlayerInteractEventListener(), this);
-		Bukkit.getPluginManager().registerEvents(new BlockPhysicsEventListener(), this);
+		Bukkit.getPluginManager().registerEvents(new BlockPhysicsEventListener(this), this);
 		Bukkit.getPluginManager().registerEvents(new BlockBurnEventListener(), this);
 		Bukkit.getPluginManager().registerEvents(new BlockFadeEventListener(), this);
 

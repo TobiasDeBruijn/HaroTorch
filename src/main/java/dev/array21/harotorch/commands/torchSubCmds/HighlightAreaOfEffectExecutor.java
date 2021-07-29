@@ -21,7 +21,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import com.google.common.util.concurrent.ExecutionError;
 
 import dev.array21.bukkitreflectionlib.ReflectionUtil;
 import net.md_5.bungee.api.ChatColor;
@@ -29,7 +28,6 @@ import dev.array21.harotorch.HaroTorch;
 import dev.array21.harotorch.commands.SubCommand;
 import dev.array21.harotorch.config.ConfigManifest.TorchRangeShape;
 import dev.array21.harotorch.lang.LangHandler;
-import dev.array21.harotorch.torch.Torch;
 import dev.array21.harotorch.torch.TorchHandler;
 
 // ReflectionUtil.getNmsClass(String) is deprecated, kept for backwards compatibility with MC:1.16 and older.
