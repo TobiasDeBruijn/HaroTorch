@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
@@ -20,6 +21,11 @@ import dev.array21.harotorch.torch.TorchHandler;
 @SuppressWarnings("deprecation")
 public class HighlightExecutor implements SubCommand {
 	
+	/**
+	 * HashMap to keep track of command usage as to avoid spam
+	 * K = The UUID of the player
+	 * V = Miliseconds since Jan 1 1970 after which the Player may execute a command again
+	 */
 	private static HashMap<UUID, Long> lastCommandTimestamps = new HashMap<>();
 	
 	private static Class<?> craftPlayerClass;
@@ -117,6 +123,12 @@ public class HighlightExecutor implements SubCommand {
 		return true;
 	}
 	
+	/**
+	 * Spawn magma cubes for the provided Player at the given Locations
+	 * @param player The Player
+	 * @param locations The Locations
+	 * @return Returns a List of Entity IDs
+	 */
 	public List<Integer> spawnHighlight(Player player, List<Location> locations) {
 		
 		List<Integer> result = new ArrayList<>();
@@ -177,6 +189,11 @@ public class HighlightExecutor implements SubCommand {
 		return result;
 	}
 	
+	/**
+	 * Kill the spawned Magma cubes to end highlighting
+	 * @param ids The Entity IDs of the Entities to remove
+	 * @param player The Player for which the Entities are showing
+	 */
 	public void killHighlighted(List<Integer> ids, Player player) {
 		try {
 			Object entityPlayerObject = ReflectionUtil.invokeMethod(craftPlayerClass, player, "getHandle");
@@ -188,8 +205,21 @@ public class HighlightExecutor implements SubCommand {
 			}
 			
 			if(ReflectionUtil.isUseNewSpigotPackaging()) {
-				for(int id : ids) {
-					Object destroyEntityPacket = ReflectionUtil.invokeConstructor(packetPlayOutEntityDestroyClass, new Class<?>[] { int.class }, new Object[] { id });
+				String[] vParts = ReflectionUtil.SERVER_VERSION.split(Pattern.quote(","));
+				int patch = Integer.valueOf(vParts[2]);
+				int minor = Integer.valueOf(vParts[1]);
+
+				// In 1.17.0 the constructor only took a single integer
+				// As of 1.17.1 it takes an int[]
+				if(patch == 0 && minor == 17) {
+					for(int id : ids) {
+						Object destroyEntityPacket = ReflectionUtil.invokeConstructor(packetPlayOutEntityDestroyClass, new Class<?>[] { int.class }, new Object[] { id });
+						ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket",
+								new Class<?>[] { packetPlayOutEntityDestroyInterfaceClass }, 
+								new Object[] { destroyEntityPacket });
+					}
+				} else {
+					Object destroyEntityPacket = ReflectionUtil.invokeConstructor(packetPlayOutEntityDestroyClass, new Class<?>[] { int[].class }, new Object[] { toIntArray(ids) });
 					ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket",
 							new Class<?>[] { packetPlayOutEntityDestroyInterfaceClass }, 
 							new Object[] { destroyEntityPacket });
@@ -207,6 +237,11 @@ public class HighlightExecutor implements SubCommand {
 		}
 	}
 	
+	/**
+	 * Convert a List of Integers to an int[]
+	 * @param a The List to convert
+	 * @return The List as an int[]
+	 */
 	private int[] toIntArray(List<Integer> a) {
 		int[] b = new int[a.size()];
 		for(int i = 0; i < a.size(); i++) {

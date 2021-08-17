@@ -48,6 +48,7 @@ public class TorchCommandExecutor implements CommandExecutor {
 			return true;
 		}
 		
-		return c.run(this.plugin, sender, args);
+		c.run(this.plugin, sender, args);
+		return true;
 	}
 }
