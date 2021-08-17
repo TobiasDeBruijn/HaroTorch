@@ -205,12 +205,12 @@ public class HighlightExecutor implements SubCommand {
 			}
 			
 			if(ReflectionUtil.isUseNewSpigotPackaging()) {
-				String[] vParts = ReflectionUtil.SERVER_VERSION.split(Pattern.quote(","));
-				int patch = Integer.valueOf(vParts[2]);
+				String[] vParts = ReflectionUtil.SERVER_VERSION.split(Pattern.quote("_"));
 				int minor = Integer.valueOf(vParts[1]);
+				int patch = Integer.valueOf(vParts[2].replace("R", ""));
 
-				// In 1.17.0 the constructor only took a single integer
-				// As of 1.17.1 it takes an int[]
+				// In 1.17.0 (1_17_R0) the constructor only took a single integer
+				// As of 1.17.1 (1_17_R1) it takes an int[]
 				if(patch == 0 && minor == 17) {
 					for(int id : ids) {
 						Object destroyEntityPacket = ReflectionUtil.invokeConstructor(packetPlayOutEntityDestroyClass, new Class<?>[] { int.class }, new Object[] { id });
