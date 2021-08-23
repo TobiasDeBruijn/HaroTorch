@@ -71,6 +71,18 @@ public class ConfigManifest {
 	public Integer torchRange;
 	
 	/**
+	 * The Y height above the Torch where it will have an effect
+	 */
+	@Required
+	public Integer torchAboveYRange;
+	
+	/**
+	 * The Y height below the Torch where it will have an effect
+	 */
+	@Required
+	public Integer torchBelowYRange;
+	
+	/**
 	 * What radius should we use to highlight Torches
 	 */
 	@Required

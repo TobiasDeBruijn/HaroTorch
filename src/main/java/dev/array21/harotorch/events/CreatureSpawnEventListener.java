@@ -73,6 +73,9 @@ public class CreatureSpawnEventListener implements Listener {
 	}
 	
 	private boolean torchInRange(Location entityLocation) {
+		int yAboveLim = this.plugin.getConfigManifest().torchAboveYRange;
+		int yBelowLim = this.plugin.getConfigManifest().torchBelowYRange;
+		
 		//Iterate over all Torches
 		for(Torch t : TorchHandler.getTorches()) {
 			
@@ -81,8 +84,8 @@ public class CreatureSpawnEventListener implements Listener {
 			
 			if(this.plugin.getConfigManifest().getTorchRangeShape() == TorchRangeShape.CIRCLE) {
 				//Check if the distance cylindrical is less than the defined range squared
-				if(TorchHandler.getDistanceCylindrical(t.getLocation(), entityLocation) < HaroTorch.RANGE) {
-					return true;
+				if(TorchHandler.getDistanceCylindrical(t.getLocation(), entityLocation) > HaroTorch.RANGE) {
+					return false;
 				}
 			} else {
 				Location lTorch = t.getLocation();
@@ -90,10 +93,31 @@ public class CreatureSpawnEventListener implements Listener {
 				double distanceZ = Math.abs(lTorch.getZ() - entityLocation.getZ());
 				
 				int radius = this.plugin.getConfigManifest().torchRange;
-				if(distanceX < radius && distanceZ < radius) {
-					return true;
+				if(!(distanceX < radius && distanceZ < radius)) {
+					return false;
 				}	
 			}
+			
+			boolean yAboveSatisfied = false;
+			boolean yBelowSatisfied = false;
+			
+			if(yAboveLim != -1) {
+				if(t.getLocation().getY() + yAboveLim <= entityLocation.getY()) {
+					yAboveSatisfied = true;
+				}
+			} else {
+				yAboveSatisfied = true;
+			}
+			
+			if(yBelowLim != -1) {
+				if(t.getLocation().getY() - yBelowLim >= entityLocation.getY()) {
+					yBelowSatisfied = true;
+				}
+			} else {
+				yBelowSatisfied = true;
+			}
+			
+			return yAboveSatisfied && yBelowSatisfied;
 		}
 		
 		return false;
