@@ -119,11 +119,41 @@ public class ConfigManifest {
 	public String[] mobsExcludeFromBlockList;
 	
 	/**
+	 * Blocks a HaroTorch is not allowed to be placed on
+	 */
+	@Nullable
+	public String[] dissallowPlacementOn;
+	
+	/**
+	 * Get a List of Materials a HaroTorch is not allowed to be placed on.
+	 * @return
+	 */
+	public List<Material> getDissallowedPlacementOn() {
+		if(this.dissallowPlacementOn == null) {
+			return new ArrayList<>();
+		}
+		
+		List<Material> mats = new ArrayList<>(this.dissallowPlacementOn.length);
+		
+		for(int i = 0; i < this.dissallowPlacementOn.length; i++) {
+			Material m = Material.matchMaterial(this.dissallowPlacementOn[i]);
+			if(m == null) {
+				HaroTorch.logWarn(String.format("Failed to parse dissalowedPlacementOn entry %d: '%s' is not a valid Material. Skipping.", i+1, this.dissallowPlacementOn[i]));
+				continue;
+			}
+			
+			mats.add(m);
+		}
+		
+		return mats;
+	}
+	
+	/**
 	 * Returns if Statistics are enabled
 	 * @return True if statistics are enabled
 	 */
 	public boolean isStatEnabled() {
-		if(this.disableStat != null && !this.disableStat ) {
+		if(this.disableStat != null && this.disableStat ) {
 			return false;
 		}
 		
