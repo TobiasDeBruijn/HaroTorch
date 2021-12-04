@@ -21,7 +21,6 @@ import dev.array21.harotorch.HaroTorch;
 
 public class StorageHandler {
 
-	
 	private String basePath;
 	
 	public StorageHandler(HaroTorch plugin) {

@@ -8,8 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import dev.array21.pluginstatlib.PluginStat;
-import dev.array21.pluginstatlib.PluginStat.PluginStatBuilder;
 import net.md_5.bungee.api.ChatColor;
 import dev.array21.harotorch.commands.TorchCommandExecutor;
 import dev.array21.harotorch.commands.TorchCommandTabCompleter;
@@ -46,18 +44,6 @@ public class HaroTorch extends JavaPlugin {
 		this.configHandler.readConfig();
 		
 		ConfigManifest manifest = this.configHandler.getManifest();
-		
-		if(manifest.isStatEnabled()) {
-			PluginStat stat = PluginStatBuilder.createDefault()
-					.setLogErrFn(HaroTorch::logWarn)
-					.setSetUuidFn(this.configHandler::setStatUuid)
-					.setUuid(manifest.statUuid != null ? manifest.statUuid : "")
-					.build();
-			
-			stat.start();
-		}
-
-		
 		LangHandler langHandler = new LangHandler(this);
 		langHandler.load();
 		

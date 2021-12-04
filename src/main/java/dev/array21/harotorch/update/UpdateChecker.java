@@ -7,13 +7,13 @@ import java.util.regex.Pattern;
 import com.google.gson.Gson;
 
 import dev.array21.harotorch.HaroTorch;
-import nl.thedutchmc.httplib.Http;
-import nl.thedutchmc.httplib.Http.RequestMethod;
-import nl.thedutchmc.httplib.Http.ResponseObject;
+import dev.array21.httplib.Http;
+import dev.array21.httplib.Http.RequestMethod;
+import dev.array21.httplib.Http.ResponseObject;
 
 public class UpdateChecker {
 	
-	private HaroTorch plugin;
+	private final HaroTorch plugin;
 	
 	public UpdateChecker(HaroTorch plugin) {
 		this.plugin = plugin;

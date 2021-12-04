@@ -69,8 +69,13 @@ mobsExcludeFromBlockList:
 # Set to -1 to disable
 torchPlaceLimit: -1
 
-
 # Command cooldown in seconds. Default: 30. -1 to disable.
 commandCooldown: 30
 
 shapeCircle: true
+
+# The Y height above the Torch where it will have an effect. Set to -1 to disable
+torchAboveYRange: -1
+
+# The Y height below the Torch where it will have an effect. Set to -1 to disable
+torchBelowYRange: -1

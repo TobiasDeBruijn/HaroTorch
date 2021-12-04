@@ -155,89 +155,85 @@ public class HighlightAreaOfEffectExecutor implements SubCommand {
 		final int range = plugin.getConfigManifest().torchRange;
 
 		for(Location lTorch : nearbyTorches) {
-			Callable<TorchParticleObject> c = new Callable<HighlightAreaOfEffectExecutor.TorchParticleObject>() {
-				
-				@Override
-				public TorchParticleObject call() throws Exception {
-					List<Location> locs = new ArrayList<>();
+			Callable<TorchParticleObject> c = () -> {
+				List<Location> locs = new ArrayList<>();
 
-					Location xNeg = lTorch.clone();
-					xNeg.setX(lTorch.getX() - range);
-					locs.add(xNeg);
-					
-					Location xPos = lTorch.clone();
-					xPos.setX(xPos.getX() + range);
-					locs.add(xPos);
-					
-					Location zNeg = lTorch.clone();
-					zNeg.setZ(lTorch.getZ() - range);
-					locs.add(zNeg);
-					
-					Location zPos = lTorch.clone();
-					zPos.setZ(lTorch.getZ() + range);
-					locs.add(zPos);
-					
-					// xNeg + 
-					for(int i = 1; i <= range; i++) {
-						Location l = xNeg.clone();
-						l.setZ(xNeg.getZ() + i);
-						locs.add(l);
-					}
-					
-					// xNeg -
-					for(int i = -1; i >= -range; i--) {
-						Location l = xNeg.clone();
-						l.setZ(xNeg.getZ() + i);
-						locs.add(l);
-					}
-					
-					// xPos +
-					for(int i = 1; i <= range; i++) {
-						Location l = xPos.clone();
-						l.setZ(xPos.getZ() + i);
-						locs.add(l);
-					}
-					
-					// xPos -
-					for(int i = -1; i >= -range; i--) {
-						Location l = xPos.clone();
-						l.setZ(xPos.getZ() + i);
-						locs.add(l);
-					}
-					
-					// zNeg +
-					for(int i = 1; i <= range; i++) {
-						Location l = zNeg.clone();
-						l.setX(zNeg.getX() + i);
-						locs.add(l);
-					}
-					
-					// zNeg -
-					for(int i = -1; i >= -range; i--) {
-						Location l = zNeg.clone();
-						l.setX(zNeg.getX() + i);
-						locs.add(l);
-					}
-					
-					// zPos +
-					for(int i = 1; i <= range; i++) {
-						Location l = zPos.clone();
-						l.setX(zPos.getX() + i);
-						locs.add(l);
-					}
-					
-					// zPos -
-					for(int i = -1; i >= -range; i--) {
-						Location l = zPos.clone();
-						l.setX(zPos.getX() + i);
-						locs.add(l);
-					}
-					
-					final int r = (int) (Math.random() * 256D);
-					final int g = (int) (Math.random() * 256D);
-					final int b = (int) (Math.random() * 256D);
-					return new TorchParticleObject(r, g, b, locs, lTorch);
+				Location xNeg = lTorch.clone();
+				xNeg.setX(lTorch.getX() - range);
+				locs.add(xNeg);
+
+				Location xPos = lTorch.clone();
+				xPos.setX(xPos.getX() + range);
+				locs.add(xPos);
+
+				Location zNeg = lTorch.clone();
+				zNeg.setZ(lTorch.getZ() - range);
+				locs.add(zNeg);
+
+				Location zPos = lTorch.clone();
+				zPos.setZ(lTorch.getZ() + range);
+				locs.add(zPos);
+
+				// xNeg +
+				for(int i = 1; i <= range; i++) {
+					Location l = xNeg.clone();
+					l.setZ(xNeg.getZ() + i);
+					locs.add(l);
 				}
+
+				// xNeg -
+				for(int i = -1; i >= -range; i--) {
+					Location l = xNeg.clone();
+					l.setZ(xNeg.getZ() + i);
+					locs.add(l);
+				}
+
+				// xPos +
+				for(int i = 1; i <= range; i++) {
+					Location l = xPos.clone();
+					l.setZ(xPos.getZ() + i);
+					locs.add(l);
+				}
+
+				// xPos -
+				for(int i = -1; i >= -range; i--) {
+					Location l = xPos.clone();
+					l.setZ(xPos.getZ() + i);
+					locs.add(l);
+				}
+
+				// zNeg +
+				for(int i = 1; i <= range; i++) {
+					Location l = zNeg.clone();
+					l.setX(zNeg.getX() + i);
+					locs.add(l);
+				}
+
+				// zNeg -
+				for(int i = -1; i >= -range; i--) {
+					Location l = zNeg.clone();
+					l.setX(zNeg.getX() + i);
+					locs.add(l);
+				}
+
+				// zPos +
+				for(int i = 1; i <= range; i++) {
+					Location l = zPos.clone();
+					l.setX(zPos.getX() + i);
+					locs.add(l);
+				}
+
+				// zPos -
+				for(int i = -1; i >= -range; i--) {
+					Location l = zPos.clone();
+					l.setX(zPos.getX() + i);
+					locs.add(l);
+				}
+
+				final int r = (int) (Math.random() * 256D);
+				final int g = (int) (Math.random() * 256D);
+				final int b = (int) (Math.random() * 256D);
+				return new TorchParticleObject(r, g, b, locs, lTorch);
 			};
 		
 			Future<TorchParticleObject> fut = POOL.submit(c);
@@ -259,31 +255,28 @@ public class HighlightAreaOfEffectExecutor implements SubCommand {
 		for(Location l : nearbyTorches) {
 			final int y = l.getWorld().getHighestBlockYAt(l);
 			
-			Callable<TorchParticleObject> callable = new Callable<TorchParticleObject>() {
-				@Override
-				public TorchParticleObject call() throws Exception {
-					final List<Location> blocksOnTorchRadius = new ArrayList<>();
+			Callable<TorchParticleObject> callable = () -> {
+				final List<Location> blocksOnTorchRadius = new ArrayList<>();
 
-					final int radius = plugin.getConfigManifest().torchRange;
-					final int cx = l.getBlockX();
-					final int cz = l.getBlockZ();
-					final World w = l.getWorld();
-					
-					for(int i = 0; i < 360; i++) {
-						
-						final double rad = i * ((2 * Math.PI)/360);
-						
-						final int x = (int) (cx + (radius * Math.cos(rad)));
-						final int z = (int) (cz + (radius * Math.sin(rad)));						
-						blocksOnTorchRadius.add(new Location(w, x, y, z));
-					}
-					
-					final int r = (int) (Math.random() * 256D);
-					final int g = (int) (Math.random() * 256D);
-					final int b = (int) (Math.random() * 256D);
-					
-					return new TorchParticleObject(r, g, b, blocksOnTorchRadius, l);
+				final int radius = plugin.getConfigManifest().torchRange;
+				final int cx = l.getBlockX();
+				final int cz = l.getBlockZ();
+				final World w = l.getWorld();
+
+				for(int i = 0; i < 360; i++) {
+
+					final double rad = i * ((2 * Math.PI)/360);
+
+					final int x = (int) (cx + (radius * Math.cos(rad)));
+					final int z = (int) (cz + (radius * Math.sin(rad)));
+					blocksOnTorchRadius.add(new Location(w, x, y, z));
 				}
+
+				final int r = (int) (Math.random() * 256D);
+				final int g = (int) (Math.random() * 256D);
+				final int b = (int) (Math.random() * 256D);
+
+				return new TorchParticleObject(r, g, b, blocksOnTorchRadius, l);
 			};
 			
 			Future<TorchParticleObject> fut = POOL.submit(callable);
@@ -331,9 +324,15 @@ public class HighlightAreaOfEffectExecutor implements SubCommand {
 				playerConnectionObject = ReflectionUtil.getObject(entityPlayerObject, "playerConnection");
 			}		
 			for(Object packet : particlePackets) {
-				ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket", 
-						new Class<?>[] { packetPlayOutWorldParticleInterfaceClass }, 
-						new Object[] { packet });
+				if(ReflectionUtil.getMajorVersion() >= 18) {
+					ReflectionUtil.invokeMethod(playerConnectionObject, "a",
+							new Class<?>[] { packetPlayOutWorldParticleInterfaceClass },
+							new Object[] { packet });
+				} else {
+					ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket",
+							new Class<?>[] { packetPlayOutWorldParticleInterfaceClass },
+							new Object[] { packet });
+				}
 			}
 		} catch(Exception e) {
 			e.printStackTrace();

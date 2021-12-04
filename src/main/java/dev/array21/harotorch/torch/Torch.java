@@ -11,8 +11,8 @@ public class Torch implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private UUID torchOwner;
-	private int x, y, z;
-	private String worldName;
+	private final int x, y, z;
+	private final String worldName;
 	
 	public Torch(UUID torchOwner, Location torchLocation) {
 		this.torchOwner = torchOwner;

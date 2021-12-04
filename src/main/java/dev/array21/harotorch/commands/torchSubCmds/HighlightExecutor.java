@@ -26,7 +26,7 @@ public class HighlightExecutor implements SubCommand {
 	 * K = The UUID of the player
 	 * V = Miliseconds since Jan 1 1970 after which the Player may execute a command again
 	 */
-	private static HashMap<UUID, Long> lastCommandTimestamps = new HashMap<>();
+	private static final HashMap<UUID, Long> lastCommandTimestamps = new HashMap<>();
 	
 	private static Class<?> craftPlayerClass;
 	private static Class<?> craftWorldClass;
@@ -62,7 +62,7 @@ public class HighlightExecutor implements SubCommand {
 				packetPlayOutEntityDestroyClass = ReflectionUtil.getMinecraftClass("network.protocol.game.PacketPlayOutEntityDestroy");
 				dataWatcherClass = ReflectionUtil.getMinecraftClass("network.syncher.DataWatcher");
 
-				entityMagmaCubeField = ReflectionUtil.getObject(null, entityTypesClass, "X");
+				entityMagmaCubeField = ReflectionUtil.getObject(entityTypesClass, (Object) null, "X");
 			} else {
 				worldClass = ReflectionUtil.getNmsClass("World");
 				entityTypesClass = ReflectionUtil.getNmsClass("EntityTypes");
@@ -75,7 +75,7 @@ public class HighlightExecutor implements SubCommand {
 				packetPlayOutEntityDestroyClass = ReflectionUtil.getNmsClass("PacketPlayOutEntityDestroy");
 				dataWatcherClass = ReflectionUtil.getNmsClass("DataWatcher");
 				
-				entityMagmaCubeField = ReflectionUtil.getObject(null, entityTypesClass, "MAGMA_CUBE");
+				entityMagmaCubeField = ReflectionUtil.getObject(entityTypesClass, (Object) null, "MAGMA_CUBE");
 			}
 			
 			packetPlayOutEntityLivingInterfaceClass = packetPlayOutEntityLivingClass.getInterfaces()[0];
@@ -145,43 +145,74 @@ public class HighlightExecutor implements SubCommand {
 			for(Location loc : locations) {
 				Object nmsWorld = ReflectionUtil.invokeMethod(craftWorldClass, loc.getWorld(), "getHandle");
 				Object entityMagmaCube = ReflectionUtil.invokeConstructor(entityMagmaCubeClass, new Class<?>[] { entityTypesClass, worldClass }, new Object[] { entityMagmaCubeField, nmsWorld });
-				
-				ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "setInvisible", new Class<?>[] { boolean.class }, new Object[] { false });
-				entityLivingClass.getField("collides").set(entityMagmaCube, false);
-				
-				//Glowing
-				ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "setFlag", new Class<?>[] { int.class, boolean.class }, new Object[] { 6, true });
-				
-				//Invisibility
-				ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "setFlag", new Class<?>[] { int.class, boolean.class }, new Object[] { 5, true });
-				
-				//Size
-				ReflectionUtil.invokeMethod(entitySlimeClass, entityMagmaCube, "setSize", new Class<?>[] { int.class, boolean.class }, new Object[] { 2, true });
-				
-				ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "setLocation", 
-						new Class<?>[] { double.class, double.class, double.class, float.class, float.class}, 
-						new Object[] { loc.getBlockX() + 0.5D, loc.getBlockY(), loc.getBlockZ() + 0.5D, 0f, 0f});
+
+				if(ReflectionUtil.getMajorVersion() >= 18) {
+					// setInvisible
+					ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "j", new Class<?>[] { boolean.class }, new Object[] { false });
+					//entityLivingClass.getField("collides").set(entityMagmaCube, false);
+					// setSharedFlag; Glowing
+					ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "b", new Class<?>[] { int.class, boolean.class }, new Object[] { 6, true });
+					// setSharedFlag; Invisibility
+					ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "b", new Class<?>[] { int.class, boolean.class }, new Object[] { 5, true });
+					// setSize
+					ReflectionUtil.invokeMethod(entitySlimeClass, entityMagmaCube, "a", new Class<?>[] { int.class, boolean.class }, new Object[] { 2, true });
+					// setPosRaw
+					ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "o",
+							new Class<?>[] { double.class, double.class, double.class },
+							new Object[] { loc.getBlockX() + 0.5D, loc.getBlockY(), loc.getBlockZ() + 0.5D });
+					// setYRot
+					ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "o",
+							new Class<?>[] { float.class },
+							new Object[] { 0f });
+					// setXRot
+					ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "p",
+							new Class<?>[] { float.class },
+							new Object[] { 0f });
+				} else {
+					ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "setInvisible", new Class<?>[] { boolean.class }, new Object[] { false });
+					entityLivingClass.getField("collides").set(entityMagmaCube, false);
+					//Glowing
+					ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "setFlag", new Class<?>[] { int.class, boolean.class }, new Object[] { 6, true });
+					//Invisibility
+					ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "setFlag", new Class<?>[] { int.class, boolean.class }, new Object[] { 5, true });
+					//Size
+					ReflectionUtil.invokeMethod(entitySlimeClass, entityMagmaCube, "setSize", new Class<?>[] { int.class, boolean.class }, new Object[] { 2, true });
+					ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "setLocation",
+							new Class<?>[] { double.class, double.class, double.class, float.class, float.class},
+							new Object[] { loc.getBlockX() + 0.5D, loc.getBlockY(), loc.getBlockZ() + 0.5D, 0f, 0f});
+				}
 				
 				Object spawnEntityLivingPacket = ReflectionUtil.invokeConstructor(packetPlayOutEntityLivingClass, new Class<?>[] { entityLivingClass }, new Object[] { entityMagmaCube });
 				Object entityMetadataPacket = ReflectionUtil.invokeConstructor(packetPlayOutEntityMetadataClass, 
 						new Class<?>[] { int.class, dataWatcherClass,  boolean.class}, 
 						new Object[] { 
-								ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "getId"),
-								ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "getDataWatcher"),
+								ReflectionUtil.getMajorVersion() >= 18 ?
+										ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "ae")
+										: ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "getId"),
+								ReflectionUtil.getMajorVersion() >= 18 ?
+										ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "ai")
+										: ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "getDataWatcher"),
 								false
 						});
-				
-				ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket", 
-						new Class<?>[] { packetPlayOutEntityLivingInterfaceClass }, 
-						new Object[] { spawnEntityLivingPacket });
-				
-				ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket",
-						new Class<?>[] { packetPlayOutEntityMetadataInterfaceClass },
-						new Object[] { entityMetadataPacket });
-				
-				result.add((Integer) ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "getId"));
+
+				if(ReflectionUtil.getMajorVersion() >= 18) {
+					ReflectionUtil.invokeMethod(playerConnectionObject, "a",
+							new Class<?>[] { packetPlayOutEntityLivingInterfaceClass },
+							new Object[] { spawnEntityLivingPacket });
+					ReflectionUtil.invokeMethod(playerConnectionObject, "a",
+							new Class<?>[] { packetPlayOutEntityMetadataInterfaceClass },
+							new Object[] { entityMetadataPacket });
+					result.add((Integer) ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "ae"));
+				} else {
+					ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket",
+							new Class<?>[] { packetPlayOutEntityLivingInterfaceClass },
+							new Object[] { spawnEntityLivingPacket });
+					ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket",
+							new Class<?>[] { packetPlayOutEntityMetadataInterfaceClass },
+							new Object[] { entityMetadataPacket });
+					result.add((Integer) ReflectionUtil.invokeMethod(entityClass, entityMagmaCube, "getId"));
+				}
 			}
-			
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -214,24 +245,43 @@ public class HighlightExecutor implements SubCommand {
 				if(patch == 0 && minor == 17) {
 					for(int id : ids) {
 						Object destroyEntityPacket = ReflectionUtil.invokeConstructor(packetPlayOutEntityDestroyClass, new Class<?>[] { int.class }, new Object[] { id });
-						ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket",
-								new Class<?>[] { packetPlayOutEntityDestroyInterfaceClass }, 
-								new Object[] { destroyEntityPacket });
+
+						if(ReflectionUtil.getMajorVersion() >= 18) {
+							ReflectionUtil.invokeMethod(playerConnectionObject, "a",
+									new Class<?>[] { packetPlayOutEntityDestroyInterfaceClass },
+									new Object[] { destroyEntityPacket });
+						} else {
+							ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket",
+									new Class<?>[] { packetPlayOutEntityDestroyInterfaceClass },
+									new Object[] { destroyEntityPacket });
+						}
 					}
 				} else {
 					Object destroyEntityPacket = ReflectionUtil.invokeConstructor(packetPlayOutEntityDestroyClass, new Class<?>[] { int[].class }, new Object[] { toIntArray(ids) });
-					ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket",
-							new Class<?>[] { packetPlayOutEntityDestroyInterfaceClass }, 
-							new Object[] { destroyEntityPacket });
+
+					if(ReflectionUtil.getMajorVersion() >= 18) {
+						ReflectionUtil.invokeMethod(playerConnectionObject, "a",
+								new Class<?>[] { packetPlayOutEntityDestroyInterfaceClass },
+								new Object[] { destroyEntityPacket });
+					} else {
+						ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket",
+								new Class<?>[] { packetPlayOutEntityDestroyInterfaceClass },
+								new Object[] { destroyEntityPacket });
+					}
 				}
 			} else {
 				Object destroyEntityPacket = ReflectionUtil.invokeConstructor(packetPlayOutEntityDestroyClass, new Class<?>[] { int[].class }, new Object[] { toIntArray(ids) });
-				ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket",
-						new Class<?>[] { packetPlayOutEntityDestroyInterfaceClass }, 
-						new Object[] { destroyEntityPacket });
-			}
 
-			
+				if (ReflectionUtil.getMajorVersion() >= 18) {
+					ReflectionUtil.invokeMethod(playerConnectionObject, "a",
+							new Class<?>[]{packetPlayOutEntityDestroyInterfaceClass},
+							new Object[]{destroyEntityPacket});
+				} else {
+					ReflectionUtil.invokeMethod(playerConnectionObject, "sendPacket",
+							new Class<?>[]{packetPlayOutEntityDestroyInterfaceClass},
+							new Object[]{destroyEntityPacket});
+				}
+			}
 		} catch(Exception e) {
 			e.printStackTrace();
 		}

@@ -29,15 +29,14 @@ allprojects {
 }
 
 dependencies {
-	
+
 	compileOnly 'org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT'
 	
 	implementation 'com.github.TheDutchMC:HaroTorch:v1-SNAPSHOT'
 	implementation 'commons-io:commons-io:2.6'
-	implementation 'dev.array21:bukkit-reflection-util:1.0'
-    implementation 'dev.array21:pluginstatlib:1.0.5'
+	implementation 'dev.array21:bukkit-reflection-util:1.1.1'
 	implementation 'dev.array21:classvalidator:1.0.0'
-    implementation 'com.github.TheDutchMC:HttpLib:1.1'
+	implementation 'dev.array21:httplib:1.2.2'
 }
 
 processResources  {
