@@ -3,7 +3,6 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 plugins {
     id 'java'
-    id 'eclipse'
     id 'com.github.johnrengelman.shadow' version '7.0.0'
     
 }
@@ -14,6 +13,7 @@ allprojects {
 	group = pluginGroup	
 
 	repositories {
+		mavenLocal()
 		mavenCentral()
   	  	maven { url "https://hub.spigotmc.org/nexus/content/repositories/snapshots" }
    	 	maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
@@ -34,7 +34,7 @@ dependencies {
 	
 	implementation 'com.github.TheDutchMC:HaroTorch:v1-SNAPSHOT'
 	implementation 'commons-io:commons-io:2.6'
-	implementation 'dev.array21:bukkit-reflection-util:1.1.1'
+	implementation 'dev.array21:bukkit-reflection-util:1.2.0'
 	implementation 'dev.array21:classvalidator:1.0.0'
 	implementation 'dev.array21:httplib:1.2.2'
 }

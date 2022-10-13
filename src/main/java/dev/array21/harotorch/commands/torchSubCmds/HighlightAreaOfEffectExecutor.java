@@ -10,6 +10,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import dev.array21.harotorch.commands.CommandCooldown;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
@@ -35,14 +36,14 @@ import dev.array21.harotorch.torch.TorchHandler;
 public class HighlightAreaOfEffectExecutor implements SubCommand {
 
 	private static final ExecutorService POOL = Executors.newFixedThreadPool(3);
-	private static HashMap<UUID, Long> lastCommandTimestamps = new HashMap<>();
-	
+	private final static HashMap<UUID, Long> lastCommandTimestamps = new HashMap<>();
+
 	private static Class<?> packetPlayOutWorldParticleClass;
 	private static Class<?> packetPlayOutWorldParticleInterfaceClass;
 	private static Class<?> craftPlayerClass;
 	private static Class<?> craftParticleClass;
 	private static Class<?> particleParamClass;
-	
+
 	static {
 		try {
 			if(ReflectionUtil.isUseNewSpigotPackaging()) {
@@ -50,12 +51,12 @@ public class HighlightAreaOfEffectExecutor implements SubCommand {
 			} else {
 				packetPlayOutWorldParticleClass = ReflectionUtil.getNmsClass("PacketPlayOutWorldParticles");
 			}
-		
+
 			packetPlayOutWorldParticleInterfaceClass = packetPlayOutWorldParticleClass.getInterfaces()[0];
-			
+
 			craftPlayerClass = ReflectionUtil.getBukkitClass("entity.CraftPlayer");
 			craftParticleClass = ReflectionUtil.getBukkitClass("CraftParticle");
-			
+
 			if(ReflectionUtil.isUseNewSpigotPackaging()) {
 				particleParamClass = ReflectionUtil.getMinecraftClass("core.particles.ParticleParam");
 			} else {
@@ -67,20 +68,9 @@ public class HighlightAreaOfEffectExecutor implements SubCommand {
 	}
 	
 	public boolean run(HaroTorch plugin, CommandSender sender, String[] args) {
-		
-		Integer commandCooldown = plugin.getConfigManifest().commandCooldown;
-		if(commandCooldown != null && commandCooldown > 0) {
-			Long lastCommandUseTimestamp = lastCommandTimestamps.get(((Player) sender).getUniqueId());
-			if(lastCommandUseTimestamp != null) {
-				if(lastCommandUseTimestamp >= System.currentTimeMillis()) {
-					sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + LangHandler.activeLang.getLangMessages().get("commandCooldown"));
-					return true;
-				}
-			}
-			
-			lastCommandTimestamps.put(((Player) sender).getUniqueId(), System.currentTimeMillis() + (commandCooldown * 1000));
-		}
-		
+
+		if (CommandCooldown.checkCommandCooldown(plugin, sender, lastCommandTimestamps)) return true;
+
 		String msg = LangHandler.activeLang.getLangMessages().get("startingAoe").replaceAll("%SECONDS%", ChatColor.RED + String.valueOf(plugin.getConfigManifest().torchHighlightTime) + ChatColor.GOLD);
 		sender.sendMessage(HaroTorch.getMessagePrefix() + ChatColor.GOLD + msg);
 		
@@ -143,7 +133,7 @@ public class HighlightAreaOfEffectExecutor implements SubCommand {
 		
 		return true;
 	}
-	
+
 	/**
 	 * Get all TorchParticleObject's in a square range
 	 * @param nearbyTorches Locations of the Torches
