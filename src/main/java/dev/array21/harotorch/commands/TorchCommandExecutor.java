@@ -1,13 +1,11 @@
 package dev.array21.harotorch.commands;
 
 import java.util.HashMap;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import net.md_5.bungee.api.ChatColor;
 import dev.array21.harotorch.HaroTorch;
-import dev.array21.harotorch.commands.torchSubCmds.ConvertExecutor;
 import dev.array21.harotorch.commands.torchSubCmds.GiveExecutor;
 import dev.array21.harotorch.commands.torchSubCmds.HelpExecutor;
 import dev.array21.harotorch.commands.torchSubCmds.HighlightAreaOfEffectExecutor;
@@ -26,7 +24,6 @@ public class TorchCommandExecutor implements CommandExecutor {
 		HashMap<String, SubCommand> subCommands = new HashMap<>();
 		subCommands.put("help", new HelpExecutor());
 		subCommands.put("version", new VersionExecutor());
-		subCommands.put("convert", new ConvertExecutor());
 		subCommands.put("give", new GiveExecutor());
 		subCommands.put("highlight", new HighlightExecutor());
 		subCommands.put("aoe", new HighlightAreaOfEffectExecutor());

@@ -17,15 +17,13 @@ public class TorchCommandTabCompleter implements TabCompleter {
 			if(sender.hasPermission("harotorch.highlight")) result.add("highlight");
 			if(sender.hasPermission("harotorch.help")) result.add("help");
 			if(sender.hasPermission("harotorch.give")) result.add("give");
-			if(sender.hasPermission("harotorch.convert")) result.add("convert");
 			if(sender.hasPermission("harotorch.version")) result.add("version");
 			if(sender.hasPermission("harotorch.aoe")) result.add("aoe");
 			
 			return result;
 		}
-		
-		List<String> result = new ArrayList<>();
-		return result;
+
+		return new ArrayList<>();
 	}
 	
 }

@@ -32,8 +32,7 @@ dependencies {
 
 	compileOnly 'org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT'
 	
-	implementation 'com.github.TheDutchMC:HaroTorch:v1-SNAPSHOT'
-	implementation 'commons-io:commons-io:2.6'
+	implementation 'commons-io:commons-io:2.7'
 	implementation 'dev.array21:bukkit-reflection-util:1.2.0'
 	implementation 'dev.array21:classvalidator:1.0.0'
 	implementation 'dev.array21:httplib:1.2.2'
@@ -50,8 +49,8 @@ task testJar(type: ShadowJar) {
 	from sourceSets.main.output
 	configurations = [project.configurations.runtimeClasspath]
 	
-	relocate 'org.apache.commons.io', 'nl.thedutchmc.harotorch.libs.org.apache.commons.io'
-	relocate 'nl.thedutchmc.httplib', 'nl.thedutchmc.harotorch.libs.nl.thedutchmc.httplib'
+	relocate 'org.apache.commons.io', 'dev.array21.harotorch.libs.org.apache.commons.io'
+	relocate 'dev.array21.httplib', 'dev.array21.harotorch.libs.dev.array21.httplib'
 	
 	destinationDirectory = file("$rootDir/server/plugins")
 }
@@ -62,9 +61,9 @@ task releaseJar(type: ShadowJar) {
 
 	from sourceSets.main.output
 	configurations = [project.configurations.runtimeClasspath]
-	
-	relocate 'org.apache.commons.io', 'nl.thedutchmc.harotorch.libs.org.apache.commons.io'
-	relocate 'nl.thedutchmc.httplib', 'nl.thedutchmc.harotorch.libs.nl.thedutchmc.httplib'
+
+	relocate 'org.apache.commons.io', 'dev.array21.harotorch.libs.org.apache.commons.io'
+	relocate 'dev.array21.httplib', 'dev.array21.harotorch.libs.dev.array21.httplib'
 	
 	destinationDirectory = file("$rootDir/releases")
 }
@@ -78,9 +77,9 @@ task ghActions(type: ShadowJar) {
 
 	from sourceSets.main.output
 	configurations = [project.configurations.runtimeClasspath]
-	
-	relocate 'org.apache.commons.io', 'nl.thedutchmc.harotorch.libs.org.apache.commons.io'
-	relocate 'nl.thedutchmc.httplib', 'nl.thedutchmc.harotorch.libs.nl.thedutchmc.httplib'
+
+	relocate 'org.apache.commons.io', 'dev.array21.harotorch.libs.org.apache.commons.io'
+	relocate 'dev.array21.httplib', 'dev.array21.harotorch.libs.dev.array21.httplib'
 
 	destinationDirectory = file("$rootDir/actions")
 }

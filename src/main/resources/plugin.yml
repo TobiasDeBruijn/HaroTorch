@@ -16,7 +16,6 @@ permissions:
   default: op
   children:
    harotorch.give: true
-   harotorch.convert: true
    harotorch.highlight: true
    harotorch.help: true
    harotorch.version: true
@@ -24,9 +23,6 @@ permissions:
    harotorch.breakall: true
  harotorch.give:
   description: /torch give
-  default: op
- harotorch.convert:
-  description: /torch convert
   default: op
  harotorch.highlight:
   description: /torch highlight
