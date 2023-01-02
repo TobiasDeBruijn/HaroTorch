@@ -18,7 +18,7 @@ import dev.array21.harotorch.torch.TorchHandler;
 
 public class CreatureSpawnEventListener implements Listener {
 
-	private HaroTorch plugin;
+	private final HaroTorch plugin;
 	
 	public CreatureSpawnEventListener(HaroTorch plugin) {
 		this.plugin = plugin;
@@ -80,12 +80,14 @@ public class CreatureSpawnEventListener implements Listener {
 		for(Torch t : TorchHandler.getTorches()) {
 			
 			//Check if the spawn occured in the same World as the current Torch
-			if(!t.getLocation().getWorld().equals(entityLocation.getWorld())) continue;
+			if(!t.getLocation().getWorld().equals(entityLocation.getWorld())) {
+				continue;
+			}
 			
 			if(this.plugin.getConfigManifest().getTorchRangeShape() == TorchRangeShape.CIRCLE) {
 				//Check if the distance cylindrical is less than the defined range squared
 				if(TorchHandler.getDistanceCylindrical(t.getLocation(), entityLocation) > HaroTorch.RANGE) {
-					return false;
+					continue;
 				}
 			} else {
 				Location lTorch = t.getLocation();
@@ -94,7 +96,7 @@ public class CreatureSpawnEventListener implements Listener {
 				
 				int radius = this.plugin.getConfigManifest().torchRange;
 				if(!(distanceX < radius && distanceZ < radius)) {
-					return false;
+					continue;
 				}	
 			}
 			
@@ -116,8 +118,10 @@ public class CreatureSpawnEventListener implements Listener {
 			} else {
 				yBelowSatisfied = true;
 			}
-			
-			return yAboveSatisfied && yBelowSatisfied;
+
+			if(yAboveSatisfied && yBelowSatisfied) {
+				return true;
+			}
 		}
 		
 		return false;
